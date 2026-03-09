@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>CircleLOG — Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+</head>
+<body class="dashboard-page">
+
+  <!-- TOP NAV -->
+  <nav class="navbar">
+    <div class="nav-brand">
+      <span>🧭</span>
+      <h1>CircleLOG</h1>
+    </div>
+    <div class="nav-user">
+      <span id="user-role-badge" class="user-badge">...</span>
+      <span id="user-name">...</span>
+      <button class="btn-logout" onclick="handleLogout()">Log Out</button>
+    </div>
+  </nav>
+
+  <main class="dashboard-body">
+
+    <!-- Welcome Banner -->
+    <div class="welcome-banner">
+      <span class="banner-icon">🏴‍☠️</span>
+      <div>
+        <h2>Welcome back, <span id="banner-name"></span>!</h2>
+        <p>"The sea is vast, but your crew is always close."</p>
+      </div>
+    </div>
+
+    <!-- CHILD SECTION (hidden by default) -->
+    <div id="child-section" class="hidden">
+      <div class="dashboard-grid">
+
+        <!-- Tasks Card -->
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">📜 My Study Log</h2>
+          </div>
+          <!-- Progress Bar -->
+          <div class="progress-section">
+            <div class="progress-label">
+              <span>Progress</span>
+              <span id="progress-text"></span>
+            </div>
+            <div class="progress-track">
+              <div class="progress-fill" id="progress-bar"></div>
+            </div>
+          </div>
+          <!-- Add Task Form -->
+          <div class="add-task-form">
+            <input type="text" id="task-title" placeholder="Task title" class="full-width"/>
+            <input type="text" id="task-subject" placeholder="Subject"/>
+            <input type="date" id="task-due"/>
+            <select id="task-priority">
+              <option value="low">🟢 Low</option>
+              <option value="medium" selected>🟡 Medium</option>
+              <option value="high">🔴 High</option>
+            </select>
+            <button class="btn-add full-width" onclick="addTask()">+ Add to Log</button>
+          </div>
+          <div class="task-list" id="child-task-list"></div>
+        </div>
+
+        <!-- Right side: Map + SOS -->
+        <div>
+          <div class="card" style="margin-bottom:20px">
+            <div class="card-header"><h2 class="card-title">📍 My Location</h2></div>
+            <div id="child-map"></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><h2 class="card-title">🆘 Emergency</h2></div>
+            <p style="font-size:.88rem;color:#9A7B60;margin-bottom:14px">
+              Press to send an instant alert to your parent.
+            </p>
+            <button id="sos-btn" onclick="sendSOS()">🆘 Send SOS</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- PARENT SECTION (hidden by default) -->
+    <div id="parent-section" class="hidden">
+      <div class="dashboard-grid">
+        <div class="card">
+          <div class="card-header"><h2 class="card-title">📋 Crew's Study Log</h2></div>
+          <div class="task-list" id="parent-task-list"></div>
+        </div>
+        <div>
+          <div class="card" style="margin-bottom:20px">
+            <div class="card-header"><h2 class="card-title">📍 Crew Location</h2></div>
+            <div id="parent-map"></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><h2 class="card-title">🔔 SOS Alerts</h2></div>
+            <div id="sos-list"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Scripts — ORDER MATTERS -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="supabase.js"></script>
+  <script src="auth.js"></script>
+  <script src="app.js"></script>
+
+</body>
+</html>

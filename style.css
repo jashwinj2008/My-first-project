@@ -1,0 +1,634 @@
+/* ============================================
+   style.css — NakamaCare
+   One Piece themed · Light · Professional
+   ============================================ */
+
+/* --- Google Fonts --- */
+@import url('https://fonts.googleapis.com/css2?family=Pirata+One&family=Nunito:wght@400;600;700;800&display=swap');
+
+/* --- CSS Variables (color system) --- */
+:root {
+  --gold:       #F4A933;
+  --gold-light: #FFD980;
+  --red:        #E8503A;
+  --blue:       #1A6B9A;
+  --blue-light: #5BA4CF;
+  --cream:      #FFF9F0;
+  --cream-dark: #FFF0D6;
+  --white:      #FFFFFF;
+  --text-dark:  #2C1810;
+  --text-mid:   #5A3E2B;
+  --text-soft:  #9A7B60;
+  --shadow:     rgba(44, 24, 16, 0.12);
+  --radius:     14px;
+  --radius-sm:  8px;
+}
+
+/* --- Reset & Base --- */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Nunito', sans-serif;
+  background-color: var(--cream);
+  color: var(--text-dark);
+  min-height: 100vh;
+}
+
+h1, h2, h3 {
+  font-family: 'Pirata One', cursive;
+  letter-spacing: 0.5px;
+}
+
+.hidden { display: none !important; }
+
+/* ============================================
+   AUTH PAGE (index.html)
+   ============================================ */
+
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #FFF0D6 0%, #FFE0A0 40%, #B8DFF5 100%);
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Decorative wave background */
+.auth-page::before {
+  content: '';
+  position: absolute;
+  bottom: -40px;
+  left: 0;
+  right: 0;
+  height: 200px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 200'%3E%3Cpath fill='%231A6B9A' fill-opacity='0.12' d='M0,100 C360,180 720,20 1080,100 C1260,140 1380,80 1440,100 L1440,200 L0,200 Z'/%3E%3C/svg%3E") no-repeat bottom/cover;
+  pointer-events: none;
+}
+
+.auth-card {
+  background: var(--white);
+  border-radius: 24px;
+  padding: 40px 36px;
+  width: 100%;
+  max-width: 440px;
+  box-shadow: 0 20px 60px var(--shadow);
+  position: relative;
+  z-index: 1;
+}
+
+.auth-logo {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.auth-logo h1 {
+  font-size: 2.4rem;
+  color: var(--red);
+  line-height: 1.1;
+}
+
+.auth-logo .logo-sub {
+  font-size: 0.85rem;
+  color: var(--text-soft);
+  font-family: 'Nunito', sans-serif;
+  margin-top: 4px;
+}
+
+.compass-icon {
+  font-size: 2.8rem;
+  display: block;
+  margin-bottom: 4px;
+}
+
+/* Tabs */
+.auth-tabs {
+  display: flex;
+  background: var(--cream-dark);
+  border-radius: var(--radius-sm);
+  padding: 4px;
+  margin-bottom: 24px;
+}
+
+.auth-tabs button {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  background: transparent;
+  border-radius: 6px;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--text-soft);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.auth-tabs button.active {
+  background: var(--white);
+  color: var(--text-dark);
+  box-shadow: 0 2px 8px var(--shadow);
+}
+
+/* Form elements */
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-mid);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid var(--cream-dark);
+  border-radius: var(--radius-sm);
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.95rem;
+  color: var(--text-dark);
+  background: var(--cream);
+  transition: border-color 0.2s;
+  outline: none;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  border-color: var(--gold);
+  background: var(--white);
+}
+
+/* Buttons */
+.btn-primary {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, var(--gold), var(--red));
+  color: var(--white);
+  border: none;
+  border-radius: var(--radius-sm);
+  font-family: 'Pirata One', cursive;
+  font-size: 1.15rem;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+  margin-top: 8px;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(232, 80, 58, 0.3);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+.btn-primary:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.auth-error {
+  background: #FFF0EE;
+  border: 1px solid #F4C2BB;
+  color: var(--red);
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 0.88rem;
+  margin-bottom: 14px;
+}
+
+/* ============================================
+   DASHBOARD PAGE
+   ============================================ */
+
+.dashboard-page {
+  min-height: 100vh;
+  background: var(--cream);
+}
+
+/* --- Top Navigation --- */
+.navbar {
+  background: linear-gradient(90deg, var(--red) 0%, #C0392B 100%);
+  color: var(--white);
+  padding: 0 28px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 4px 16px rgba(232, 80, 58, 0.25);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.nav-brand h1 {
+  font-size: 1.6rem;
+  color: var(--white);
+}
+
+.nav-brand .brand-icon {
+  font-size: 1.4rem;
+}
+
+.nav-user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.user-badge {
+  background: rgba(255,255,255,0.2);
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.btn-logout {
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.3);
+  color: var(--white);
+  padding: 7px 16px;
+  border-radius: 8px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-logout:hover {
+  background: rgba(255,255,255,0.25);
+}
+
+/* --- Main Layout --- */
+.dashboard-body {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 28px 20px;
+}
+
+/* Welcome banner */
+.welcome-banner {
+  background: linear-gradient(135deg, var(--gold-light), var(--cream-dark));
+  border-radius: var(--radius);
+  padding: 24px 28px;
+  margin-bottom: 28px;
+  border-left: 5px solid var(--gold);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.welcome-banner .banner-icon {
+  font-size: 2.6rem;
+}
+
+.welcome-banner h2 {
+  font-size: 1.6rem;
+  color: var(--text-dark);
+}
+
+.welcome-banner p {
+  color: var(--text-mid);
+  font-size: 0.9rem;
+  margin-top: 2px;
+}
+
+/* --- Grid Layout --- */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 24px;
+}
+
+@media (max-width: 768px) {
+  .dashboard-grid { grid-template-columns: 1fr; }
+}
+
+/* --- Cards --- */
+.card {
+  background: var(--white);
+  border-radius: var(--radius);
+  padding: 24px;
+  box-shadow: 0 4px 20px var(--shadow);
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  padding-bottom: 14px;
+  border-bottom: 2px solid var(--cream-dark);
+}
+
+.card-title {
+  font-size: 1.2rem;
+  color: var(--text-dark);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* --- Add Task Form --- */
+.add-task-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding: 18px;
+  background: var(--cream);
+  border-radius: var(--radius-sm);
+}
+
+.add-task-form input,
+.add-task-form select {
+  padding: 10px 14px;
+  border: 2px solid var(--cream-dark);
+  border-radius: var(--radius-sm);
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.9rem;
+  background: var(--white);
+  color: var(--text-dark);
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.add-task-form input:focus,
+.add-task-form select:focus {
+  border-color: var(--gold);
+}
+
+.add-task-form .full-width {
+  grid-column: 1 / -1;
+}
+
+.btn-add {
+  grid-column: 1 / -1;
+  padding: 12px;
+  background: linear-gradient(135deg, var(--blue), var(--blue-light));
+  color: var(--white);
+  border: none;
+  border-radius: var(--radius-sm);
+  font-family: 'Pirata One', cursive;
+  font-size: 1.05rem;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.btn-add:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(26, 107, 154, 0.3);
+}
+
+/* --- Progress Bar --- */
+.progress-section {
+  margin-bottom: 20px;
+}
+
+.progress-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-mid);
+  margin-bottom: 8px;
+}
+
+.progress-track {
+  background: var(--cream-dark);
+  border-radius: 20px;
+  height: 12px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--gold), var(--red));
+  border-radius: 20px;
+  width: 0%;
+  transition: width 0.6s ease;
+}
+
+/* --- Task Cards --- */
+.task-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 420px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.task-card {
+  background: var(--cream);
+  border: 2px solid var(--cream-dark);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: all 0.2s;
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.task-card:hover {
+  border-color: var(--gold);
+  box-shadow: 0 3px 12px var(--shadow);
+}
+
+.task-card.done {
+  opacity: 0.65;
+  background: #F6FFF6;
+  border-color: #C3E6C3;
+}
+
+.task-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  font-family: 'Nunito', sans-serif;
+  color: var(--text-dark);
+}
+
+.task-title.striked {
+  text-decoration: line-through;
+  color: var(--text-soft);
+}
+
+.task-meta {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+
+/* Badges */
+.badge {
+  padding: 3px 9px;
+  border-radius: 12px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.badge.subject  { background: #EAF4FF; color: var(--blue); }
+.badge.due      { background: #FFF3E0; color: #E67E22; }
+.badge.priority.high   { background: #FFEAEA; color: var(--red); }
+.badge.priority.medium { background: #FFF8E0; color: #D4A017; }
+.badge.priority.low    { background: #E8F5E9; color: #27AE60; }
+
+/* Task action buttons */
+.task-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.btn-icon {
+  width: 34px;
+  height: 34px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s;
+}
+
+.btn-icon:hover { transform: scale(1.1); }
+.btn-done   { background: #E8F5E9; color: #27AE60; }
+.btn-undo   { background: #FFF3E0; color: #E67E22; }
+.btn-delete { background: #FFEAEA; color: var(--red); }
+
+/* Empty message */
+.empty-msg {
+  text-align: center;
+  color: var(--text-soft);
+  font-size: 0.9rem;
+  padding: 24px 0;
+}
+
+/* --- SOS Button --- */
+.sos-section {
+  margin-top: 16px;
+}
+
+#sos-btn {
+  width: 100%;
+  padding: 16px;
+  background: linear-gradient(135deg, var(--red), #C0392B);
+  color: var(--white);
+  border: none;
+  border-radius: var(--radius-sm);
+  font-family: 'Pirata One', cursive;
+  font-size: 1.3rem;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+  animation: pulse 2.5s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(232, 80, 58, 0.4); }
+  50%       { box-shadow: 0 0 0 10px rgba(232, 80, 58, 0); }
+}
+
+#sos-btn:hover {
+  transform: scale(1.02);
+}
+
+/* --- SOS Alert Cards --- */
+.sos-card {
+  background: #FFF0EE;
+  border: 1px solid #F4C2BB;
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  margin-bottom: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.88rem;
+}
+
+.sos-time {
+  color: var(--text-soft);
+  font-size: 0.78rem;
+}
+
+/* --- Map --- */
+#map {
+  width: 100%;
+  height: 220px;
+  border-radius: var(--radius-sm);
+  margin-top: 12px;
+  border: 2px solid var(--cream-dark);
+  overflow: hidden;
+}
+
+/* --- Child Group (parent view) --- */
+.child-group {
+  margin-bottom: 20px;
+}
+
+.child-name {
+  font-size: 1rem;
+  color: var(--text-dark);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.child-progress {
+  background: var(--gold-light);
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 0.78rem;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  color: var(--text-mid);
+}
+
+/* Scrollbar styling */
+.task-list::-webkit-scrollbar {
+  width: 6px;
+}
+.task-list::-webkit-scrollbar-track {
+  background: var(--cream-dark);
+  border-radius: 3px;
+}
+.task-list::-webkit-scrollbar-thumb {
+  background: var(--gold);
+  border-radius: 3px;
+}
