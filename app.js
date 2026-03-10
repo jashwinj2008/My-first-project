@@ -7,6 +7,11 @@ let currentProfile = null; // name, role from DB
 
 // ── 1. INIT — runs when page loads ───────────
 window.addEventListener('DOMContentLoaded', async () => {
+  const isDark = localStorage.getItem('darkMode') === 'true';
+  if (isDark) {
+    document.body.classList.add('dark');
+    document.getElementById('dark-toggle-btn').textContent = '☀️';
+  }
 
   const { data: { session } } = await supabaseClient.auth.getSession();
   if (!session) { window.location.href = 'index.html'; return; }
@@ -33,18 +38,27 @@ async function loadProfile() {
 
   console.log('loadProfile — data:', data, 'error:', error, 'userId:', currentUser.id);
 
+  // PGRST116 = "no rows found" — genuine missing profile, safe to sign out.
+  // Any other error (network, server) means we shouldn't sign the user out.
+  if (error && error.code !== 'PGRST116') {
+    document.getElementById('user-name').textContent = 'Error loading profile';
+    console.error('loadProfile error:', error.message);
+    return;
+  }
+
   if (!data) {
-    // Profile row missing — sign out and go to login
+    // Profile row genuinely missing — sign out and go to login
     await supabaseClient.auth.signOut();
     window.location.href = 'index.html';
     return;
   }
 
   currentProfile = data;
-  document.getElementById('user-name').textContent = data.name;
   document.getElementById('banner-name').textContent = data.name;
-  document.getElementById('user-role-badge').textContent =
-    data.role === 'parent' ? '⚓ Captain' : '🏴‍☠️ Crew';
+
+  const avatar = data.avatar || '🏴‍☠️';
+  const navAvatar = document.getElementById('nav-avatar');
+  if (navAvatar) navAvatar.textContent = avatar;
 }
 
 // ── 3. SHOW CHILD DASHBOARD ──────────────────
@@ -60,6 +74,9 @@ async function showParentDashboard() {
   await loadChildrenTasks();
   await loadSOSAlerts();
   initMap('parent-map');
+
+  // Refresh alerts every 30 seconds
+  setInterval(loadSOSAlerts, 30000);
 }
 
 // ── 5. LOAD CHILD'S OWN TASKS ────────────────
@@ -98,6 +115,18 @@ async function loadChildrenTasks() {
 }
 
 // ── 7. RENDER TASKS — child view ─────────────
+function getDueDateInfo(dueDateStr) {
+  if (!dueDateStr) return null;
+  const today = new Date(); today.setHours(0,0,0,0);
+  const due   = new Date(dueDateStr); due.setHours(0,0,0,0);
+  const diff  = Math.round((due - today) / (1000 * 60 * 60 * 24));
+  if (diff < 0)  return { label: 'Overdue by ' + Math.abs(diff) + 'd', cls: 'overdue' };
+  if (diff === 0) return { label: 'Due Today',     cls: 'due-soon' };
+  if (diff === 1) return { label: 'Due Tomorrow',   cls: 'due-soon' };
+  if (diff <= 3)  return { label: diff + ' days left', cls: 'due-soon' };
+  return { label: diff + ' days left', cls: 'due-ok' };
+}
+
 function renderTasks(tasks, containerId) {
   const el = document.getElementById(containerId);
 
@@ -107,7 +136,13 @@ function renderTasks(tasks, containerId) {
   }
 
   // Build HTML string for each task
-  el.innerHTML = tasks.map(task => `
+  el.innerHTML = tasks.map(task => {
+    const dueInfo = getDueDateInfo(task.due_date);
+    const dueBadge = (!task.is_complete && dueInfo)
+      ? `<span class="badge ${dueInfo.cls}">${dueInfo.label}</span>`
+      : '';
+    
+    return `
     <div class="task-card ${task.is_complete ? 'done' : ''}">
       <div class="task-info">
         <h3 class="task-title ${task.is_complete ? 'striked' : ''}">${task.title}</h3>
@@ -115,17 +150,19 @@ function renderTasks(tasks, containerId) {
           <span class="badge subject">${task.subject || 'General'}</span>
           <span class="badge priority ${task.priority}">${task.priority}</span>
           ${task.due_date ? `<span class="badge due">📅 ${task.due_date}</span>` : ''}
+          ${dueBadge}
         </div>
       </div>
       <div class="task-actions">
         <button onclick="toggleComplete('${task.id}', ${task.is_complete})"
           class="btn-icon ${task.is_complete ? 'btn-undo' : 'btn-done'}">
-          ${task.is_complete ? '↩' : '✓'}
+          ${task.is_complete ? '<i data-lucide="rotate-ccw"></i>' : '<i data-lucide="check"></i>'}
         </button>
-        <button onclick="deleteTask('${task.id}')" class="btn-icon btn-delete">🗑</button>
+        <button onclick="deleteTask('${task.id}')" class="btn-icon btn-delete"><i data-lucide="trash-2"></i></button>
       </div>
     </div>
-  `).join('');
+  `}).join('');
+  lucide.createIcons();
 }
 
 // ── 8. RENDER TASKS — parent view ────────────
@@ -153,6 +190,7 @@ function renderParentTasks(tasks, children) {
       </div>
     `;
   }).join('');
+  lucide.createIcons();
 }
 
 // ── 9. ADD TASK ───────────────────────────────
@@ -164,12 +202,17 @@ async function addTask() {
 
   if (!title) { alert('Enter a task title!'); return; }
 
-  await supabaseClient.from('tasks').insert({
+  const { error } = await supabaseClient.from('tasks').insert({
     user_id: currentUser.id,
     title, subject, priority,
     due_date: dueDate || null,
     is_complete: false
   });
+
+  if (error) {
+    alert('Failed to add task: ' + error.message);
+    return;
+  }
 
   // Clear inputs
   document.getElementById('task-title').value   = '';
@@ -186,6 +229,17 @@ async function toggleComplete(taskId, currentStatus) {
     .update({ is_complete: !currentStatus })
     .eq('id', taskId);
   await loadChildTasks();
+}
+
+function toggleDarkMode() {
+  document.body.classList.toggle('dark');
+  const isDark = document.body.classList.contains('dark');
+  localStorage.setItem('darkMode', isDark);
+  const btn = document.getElementById('dark-toggle-btn');
+  btn.innerHTML = isDark
+    ? '<i data-lucide="sun"></i>'
+    : '<i data-lucide="moon"></i>';
+  lucide.createIcons();
 }
 
 // ── 11. DELETE TASK ───────────────────────────
@@ -254,6 +308,7 @@ async function loadSOSAlerts() {
       <span class="sos-time">${new Date(a.created_at).toLocaleString()}</span>
     </div>
   `).join('');
+  lucide.createIcons();
 }
 
 // ── 15. MAP — Leaflet.js ──────────────────────
@@ -273,4 +328,36 @@ function initMap(containerId) {
   } catch (e) {
     console.error('Map failed to load:', e);
   }
+}
+
+const AVATARS = ['🏴‍☠️','⚓','🧭','⚔️','🌊','🦁','🐉','🌟','🔥','👑'];
+
+function openProfile() {
+  document.getElementById('profile-avatar-display').textContent = currentProfile.avatar || '🏴‍☠️';
+  document.getElementById('profile-name-display').textContent   = currentProfile.name;
+  document.getElementById('profile-role-display').textContent   =
+    currentProfile.role === 'parent' ? '⚓ Captain (Parent)' : '🏴‍☠️ Crew (Child)';
+  document.getElementById('profile-email-display').textContent  = currentProfile.email;
+  const picker = document.getElementById('avatar-picker');
+  picker.innerHTML = AVATARS.map(e => `
+    <div onclick="selectAvatar('${e}')"
+      style="width:48px;height:48px;border-radius:50%;border:3px solid ${(currentProfile.avatar||'🏴‍☠️')===e?'#E8503A':'var(--border)'};
+             font-size:1.5rem;cursor:pointer;display:flex;align-items:center;justify-content:center;
+             background:var(--cream);transition:all 0.2s;">
+      ${e}
+    </div>
+  `).join('');
+  document.getElementById('profile-overlay').classList.remove('hidden');
+}
+
+function closeProfile() {
+  document.getElementById('profile-overlay').classList.add('hidden');
+}
+
+async function selectAvatar(emoji) {
+  await supabaseClient.from('profiles').update({ avatar: emoji }).eq('id', currentUser.id);
+  currentProfile.avatar = emoji;
+  document.getElementById('profile-avatar-display').textContent = emoji;
+  document.getElementById('nav-avatar').textContent             = emoji;
+  openProfile(); // re-render picker with new selection highlighted
 }

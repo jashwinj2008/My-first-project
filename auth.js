@@ -8,6 +8,7 @@ function showLogin() {
   document.getElementById('signup-form').classList.add('hidden');
   document.getElementById('tab-login').classList.add('active');
   document.getElementById('tab-signup').classList.remove('active');
+  document.getElementById('auth-error').classList.add('hidden');
 }
 
 function showSignup() {
@@ -15,6 +16,7 @@ function showSignup() {
   document.getElementById('login-form').classList.add('hidden');
   document.getElementById('tab-signup').classList.add('active');
   document.getElementById('tab-login').classList.remove('active');
+  document.getElementById('auth-error').classList.add('hidden');
 }
 
 // Show parent email field only if role = child
@@ -30,6 +32,10 @@ function handleRoleChange() {
 
 // ── SIGNUP ──────────────────────────────────
 async function handleSignup() {
+  const authSubmitBtn = document.getElementById('auth-submit-btn-signup');
+  if (authSubmitBtn) authSubmitBtn.disabled = true;
+
+  document.getElementById('auth-error').classList.add('hidden');
   const name        = document.getElementById('signup-name').value.trim();
   const email       = document.getElementById('signup-email').value.trim();
   const password    = document.getElementById('signup-password').value;
@@ -94,17 +100,46 @@ async function handleSignup() {
     return;
   }
 
-  // 4. Go to dashboard
-  window.location.href = 'dashboard.html';
+  // 4. Go to confirmation screen
+  showEmailConfirmation(email);
+  if (authSubmitBtn) authSubmitBtn.disabled = false;
+}
+
+function showEmailConfirmation(email) {
+  document.getElementById('login-form').classList.add('hidden');
+  document.getElementById('signup-form').classList.add('hidden');
+  document.getElementById('auth-tabs').classList.add('hidden');
+  document.getElementById('auth-error').classList.add('hidden');
+  const div = document.createElement('div');
+  div.style.textAlign = 'center';
+  div.style.padding   = '10px 0';
+  div.innerHTML = `
+    <div style="font-size:3rem;margin-bottom:16px">📬</div>
+    <h2 style="font-family:'Pirata One',cursive;color:#E8503A;font-size:1.4rem;margin-bottom:10px">
+      Check Your Email!
+    </h2>
+    <p style="color:var(--text-mid);font-size:0.9rem;line-height:1.6;margin-bottom:20px">
+      We sent a confirmation link to<br>
+      <strong>${email}</strong><br><br>
+      Click the link to verify, then come back and log in.
+    </p>
+    <button onclick="location.reload()" class="btn-primary">Back to Login</button>
+  `;
+  document.querySelector('.auth-card').appendChild(div);
 }
 
 // ── LOGIN ────────────────────────────────────
 async function handleLogin() {
+  const authSubmitBtn = document.getElementById('auth-submit-btn');
+  if (authSubmitBtn) authSubmitBtn.disabled = true;
+
+  document.getElementById('auth-error').classList.add('hidden');
   const email    = document.getElementById('login-email').value.trim();
   const password = document.getElementById('login-password').value;
 
   if (!email || !password) {
     showAuthError('Enter your email and password.');
+    if (authSubmitBtn) authSubmitBtn.disabled = false;
     return;
   }
 
@@ -117,12 +152,16 @@ async function handleLogin() {
     if (btn) { btn.disabled = false; btn.textContent = 'Set Sail →'; }
     if (error.status === 429 || error.message.toLowerCase().includes('rate')) {
       showAuthError('Too many attempts. Please wait a minute and try again.');
+    } else if (error.message.toLowerCase().includes('confirm')) {
+      showAuthError('Please confirm your email first. Check your inbox!');
     } else {
       showAuthError(error.message);
     }
+    if (authSubmitBtn) authSubmitBtn.disabled = false;
     return;
   }
 
+  if (authSubmitBtn) authSubmitBtn.disabled = false;
   window.location.href = 'dashboard.html';
 }
 
@@ -139,8 +178,27 @@ function showAuthError(msg) {
   el.classList.remove('hidden');
 }
 
+function toggleDarkAuth() {
+  document.body.classList.toggle('dark');
+  const isDark = document.body.classList.contains('dark');
+  localStorage.setItem('darkMode', isDark);
+  const btn = document.getElementById('auth-dark-btn');
+  if (btn) btn.innerHTML = isDark ? 'Light' : 'Dark';
+}
+
 // ── On page load: if already logged in → dashboard
 window.addEventListener('DOMContentLoaded', async () => {
+  const isDark = localStorage.getItem('darkMode') === 'true';
+  if (isDark) {
+    document.body.classList.add('dark');
+    const btn = document.getElementById('auth-dark-btn');
+    if (btn) btn.innerHTML = 'Light';
+  }
+
+  // Only redirect if we are on the login page (index.html or root)
+  const isLoginPage = window.location.pathname.endsWith('index.html') || window.location.pathname === '/' || window.location.pathname === '';
+  if (!isLoginPage) return;
+
   const { data: { session } } = await supabaseClient.auth.getSession();
   if (session) window.location.href = 'dashboard.html';
 });

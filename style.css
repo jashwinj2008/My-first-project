@@ -24,6 +24,20 @@
   --radius-sm:  8px;
 }
 
+body.dark {
+  --cream:      #1A1A2E;
+  --cream-dark: #16213E;
+  --white:      #0F3460;
+  --text-dark:  #E8E8E8;
+  --text-mid:   #B0B0B0;
+  --text-soft:  #888888;
+  --card-bg:    #16213E;
+  --body-bg:    #1A1A2E;
+  --border:     #0F3460;
+  --shadow:     rgba(0,0,0,0.4);
+  --input-bg:   #0F3460;
+}
+
 /* --- Reset & Base --- */
 *, *::before, *::after {
   margin: 0;
@@ -57,7 +71,6 @@ h1, h2, h3 {
   background: linear-gradient(135deg, #FFF0D6 0%, #FFE0A0 40%, #B8DFF5 100%);
   padding: 24px;
   position: relative;
-  overflow: hidden;
 }
 
 /* Decorative wave background */
@@ -280,6 +293,96 @@ h1, h2, h3 {
 
 .btn-logout:hover {
   background: rgba(255,255,255,0.25);
+}
+
+.dark-toggle {
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.3);
+  color: #FFFFFF;
+  padding: 7px 12px;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.auth-dark-toggle {
+  position: absolute;
+  top: 16px; right: 16px;
+  background: transparent;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+/* Global icon base */
+[data-lucide] {
+  width: 16px;
+  height: 16px;
+  stroke-width: 2;
+  vertical-align: middle;
+  display: inline-block;
+}
+
+/* Card title icons */
+.card-title [data-lucide] {
+  width: 18px;
+  height: 18px;
+  margin-right: 8px;
+  color: #E8503A;
+  stroke: #E8503A;
+}
+
+/* Navbar button icons — must be white */
+.btn-logout [data-lucide],
+.dark-toggle [data-lucide] {
+  width: 15px;
+  height: 15px;
+  margin-right: 5px;
+  color: #FFFFFF;
+  stroke: #FFFFFF;
+}
+
+/* Task action button icons */
+.btn-icon [data-lucide] {
+  width: 15px;
+  height: 15px;
+}
+
+/* SOS button icon */
+#sos-btn [data-lucide] {
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
+  vertical-align: middle;
+  color: #FFFFFF;
+  stroke: #FFFFFF;
+}
+
+.profile-overlay {
+  position:fixed; inset:0;
+  background:rgba(0,0,0,0.5);
+  z-index:2000;
+  display:flex; align-items:center; justify-content:center;
+  padding:20px;
+  backdrop-filter:blur(10px);
+}
+.profile-card {
+  background:var(--card-bg);
+  border-radius:24px;
+  padding:36px;
+  width:100%; max-width:400px;
+  box-shadow:0 20px 60px var(--shadow);
+  animation: popIn 0.3s ease;
+}
+@keyframes popIn {
+  from { opacity:0; transform:scale(0.9); }
+  to   { opacity:1; transform:scale(1); }
+}
+.btn-profile {
+  background:rgba(255,255,255,0.15);
+  border:1px solid rgba(255,255,255,0.3);
+  color:#FFFFFF; padding:5px 10px;
+  border-radius:8px; font-size:1.2rem; cursor:pointer;
 }
 
 /* --- Main Layout --- */
@@ -505,6 +608,13 @@ h1, h2, h3 {
 .badge.priority.high   { background: #FFEAEA; color: var(--red); }
 .badge.priority.medium { background: #FFF8E0; color: #D4A017; }
 .badge.priority.low    { background: #E8F5E9; color: #27AE60; }
+.badge.overdue  { background:#FFEAEA; color:#E8503A; animation: blink 1.5s infinite; }
+.badge.due-soon { background:#FFF8E0; color:#D4A017; }
+.badge.due-ok   { background:#E8F5E9; color:#27AE60; }
+@keyframes blink {
+  0%,100% { opacity:1; }
+  50%     { opacity:0.4; }
+}
 
 /* Task action buttons */
 .task-actions {
@@ -579,6 +689,7 @@ h1, h2, h3 {
   justify-content: space-between;
   align-items: center;
   font-size: 0.88rem;
+  color: #2C1810;
 }
 
 .sos-time {
@@ -587,7 +698,8 @@ h1, h2, h3 {
 }
 
 /* --- Map --- */
-#map {
+#child-map,
+#parent-map {
   width: 100%;
   height: 220px;
   border-radius: var(--radius-sm);

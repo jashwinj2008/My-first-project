@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CircleLOG — Dashboard</title>
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -15,9 +16,11 @@
       <h1>CircleLOG</h1>
     </div>
     <div class="nav-user">
-      <span id="user-role-badge" class="user-badge">...</span>
-      <span id="user-name">...</span>
-      <button class="btn-logout" onclick="handleLogout()">Log Out</button>
+      <button class="btn-profile" onclick="openProfile()">
+        <i data-lucide="user-circle" style="width: 28px; height: 28px; stroke-width: 1.5;"></i>
+      </button>
+      <button id="dark-toggle-btn" class="dark-toggle" onclick="toggleDarkMode()"><i data-lucide="moon"></i></button>
+      <button class="btn-logout" onclick="handleLogout()"><i data-lucide="log-out"></i> Log Out</button>
     </div>
   </nav>
 
@@ -27,7 +30,7 @@
     <div class="welcome-banner">
       <span class="banner-icon">🏴‍☠️</span>
       <div>
-        <h2>Welcome back, <span id="banner-name"></span>!</h2>
+        <h2>Welcome, <span id="banner-name"></span>!</h2>
         <p>"The sea is vast, but your crew is always close."</p>
       </div>
     </div>
@@ -39,7 +42,7 @@
         <!-- Tasks Card -->
         <div class="card">
           <div class="card-header">
-            <h2 class="card-title">📜 My Study Log</h2>
+            <h2 class="card-title"><i data-lucide="book-open"></i> Study Log</h2>
           </div>
           <!-- Progress Bar -->
           <div class="progress-section">
@@ -69,15 +72,15 @@
         <!-- Right side: Map + SOS -->
         <div>
           <div class="card" style="margin-bottom:20px">
-            <div class="card-header"><h2 class="card-title">📍 My Location</h2></div>
+            <div class="card-header"><h2 class="card-title"><i data-lucide="map-pin"></i> My Location</h2></div>
             <div id="child-map"></div>
           </div>
           <div class="card">
-            <div class="card-header"><h2 class="card-title">🆘 Emergency</h2></div>
+            <div class="card-header"><h2 class="card-title"><i data-lucide="alert-circle"></i> Emergency</h2></div>
             <p style="font-size:.88rem;color:#9A7B60;margin-bottom:14px">
               Press to send an instant alert to your parent.
             </p>
-            <button id="sos-btn" onclick="sendSOS()">🆘 Send SOS</button>
+            <button id="sos-btn" onclick="sendSOS()"><i data-lucide="alert-triangle"></i> Send SOS</button>
           </div>
         </div>
 
@@ -88,16 +91,22 @@
     <div id="parent-section" class="hidden">
       <div class="dashboard-grid">
         <div class="card">
-          <div class="card-header"><h2 class="card-title">📋 Crew's Study Log</h2></div>
+          <div class="card-header">
+            <h2 class="card-title"><i data-lucide="users"></i> Crew's Study Log</h2>
+            <button class="btn-icon" onclick="loadChildrenTasks()" title="Refresh Log">🔄</button>
+          </div>
           <div class="task-list" id="parent-task-list"></div>
         </div>
         <div>
           <div class="card" style="margin-bottom:20px">
-            <div class="card-header"><h2 class="card-title">📍 Crew Location</h2></div>
+            <div class="card-header"><h2 class="card-title"><i data-lucide="map-pin"></i> Crew Location</h2></div>
             <div id="parent-map"></div>
           </div>
           <div class="card">
-            <div class="card-header"><h2 class="card-title">🔔 SOS Alerts</h2></div>
+            <div class="card-header">
+              <h2 class="card-title"><i data-lucide="bell"></i> SOS Alerts</h2>
+              <button class="btn-icon" onclick="loadSOSAlerts()" title="Refresh Alerts">🔄</button>
+            </div>
             <div id="sos-list"></div>
           </div>
         </div>
@@ -106,12 +115,72 @@
 
   </main>
 
+  <div id="profile-overlay" class="profile-overlay hidden"
+       onclick="if(event.target===this) closeProfile()">
+    <div class="profile-card">
+      <div style="text-align:center; margin-bottom:24px">
+        <span id="profile-avatar-display" style="font-size:4rem; display:block; margin-bottom:8px">🏴‍☠️</span>
+        <div id="profile-name-display" style="font-family:'Pirata One',cursive; font-size:1.6rem"></div>
+        <div id="profile-role-display" style="color:var(--text-soft); font-size:0.9rem; margin-top:4px"></div>
+      </div>
+      <p style="font-size:0.8rem;color:var(--text-soft);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px">
+        Choose Your Avatar
+      </p>
+      <div id="avatar-picker" style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:20px"></div>
+      <div style="background:var(--cream);border-radius:8px;padding:16px;margin-bottom:16px">
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:0.9rem">
+          <span style="color:var(--text-soft);font-weight:700">Email</span>
+          <span id="profile-email-display"></span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0;font-size:0.9rem">
+          <span style="color:var(--text-soft);font-weight:700">App</span>
+          <span>CircleLog v1.0</span>
+        </div>
+      </div>
+      <button onclick="closeProfile()"
+        style="width:100%;padding:12px;background:var(--cream-dark);border:none;border-radius:8px;font-family:'Nunito',sans-serif;font-weight:700;cursor:pointer;color:var(--text-mid)">
+        Close
+      </button>
+    </div>
+  </div>
+
   <!-- Scripts — ORDER MATTERS -->
+  <div id="profile-overlay" class="profile-overlay hidden"
+       onclick="if(event.target===this) closeProfile()">
+    <div class="profile-card">
+      <div style="text-align:center; margin-bottom:24px">
+        <span id="profile-avatar-display" style="font-size:4rem; display:block; margin-bottom:8px">🏴‍☠️</span>
+        <div id="profile-name-display" style="font-family:'Pirata One',cursive; font-size:1.6rem"></div>
+        <div id="profile-role-display" style="color:var(--text-soft); font-size:0.9rem; margin-top:4px"></div>
+      </div>
+      <p style="font-size:0.8rem;color:var(--text-soft);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px">
+        Choose Your Avatar
+      </p>
+      <div id="avatar-picker" style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:20px"></div>
+      <div style="background:var(--cream);border-radius:8px;padding:16px;margin-bottom:16px">
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:0.9rem">
+          <span style="color:var(--text-soft);font-weight:700">Email</span>
+          <span id="profile-email-display"></span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0;font-size:0.9rem">
+          <span style="color:var(--text-soft);font-weight:700">App</span>
+          <span>CircleLog v1.0</span>
+        </div>
+      </div>
+      <button onclick="closeProfile()"
+        style="width:100%;padding:12px;background:var(--cream-dark);border:none;border-radius:8px;font-family:'Nunito',sans-serif;font-weight:700;cursor:pointer;color:var(--text-mid)">
+        Close
+      </button>
+    </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="supabase.js"></script>
   <script src="auth.js"></script>
   <script src="app.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>lucide.createIcons();</script>
 
 </body>
 </html>

@@ -9,6 +9,7 @@
 <body class="auth-page">
 
   <div class="auth-card">
+    <button id="auth-dark-btn" class="auth-dark-toggle" onclick="toggleDarkAuth()">🌙</button>
 
     <!-- Logo -->
     <div class="auth-logo">
@@ -36,8 +37,8 @@
         <label>Password</label>
         <input type="password" id="login-password" placeholder="••••••••" />
       </div>
-      <button class="btn-primary" data-label="Set Sail →"
-              id="auth-submit-btn" onclick="handleLogin()">
+      <button class="btn-primary" id="auth-submit-btn" data-label="Set Sail →"
+              onclick="handleLogin()">
         Set Sail →
       </button>
     </div>
@@ -69,8 +70,8 @@
         <label>Parent's Email</label>
         <input type="email" id="signup-parent-email" placeholder="parent@email.com" />
       </div>
-      <button class="btn-primary" data-label="Join the Crew →"
-              id="auth-submit-btn" onclick="handleSignup()">
+      <button class="btn-primary" id="auth-submit-btn-signup" data-label="Join the Crew →"
+              onclick="handleSignup()">
         Join the Crew →
       </button>
     </div>
@@ -81,5 +82,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase.js"></script>
   <script src="auth.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>lucide.createIcons();</script>
 </body>
 </html>
