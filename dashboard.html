@@ -17,6 +17,7 @@
     </div>
     <div class="nav-user">
       <button class="btn-profile" onclick="openProfile()">
+        <span id="nav-avatar" style="font-size: 1.5rem; margin-right: 8px;">🏴‍☠️</span>
         <i data-lucide="user-circle" style="width: 28px; height: 28px; stroke-width: 1.5;"></i>
       </button>
       <button id="dark-toggle-btn" class="dark-toggle" onclick="toggleDarkMode()"><i data-lucide="moon"></i></button>
@@ -60,9 +61,9 @@
             <input type="text" id="task-subject" placeholder="Subject"/>
             <input type="date" id="task-due"/>
             <select id="task-priority">
-              <option value="low">🟢 Low</option>
-              <option value="medium" selected>🟡 Medium</option>
-              <option value="high">🔴 High</option>
+              <option value="low">Low Priority</option>
+              <option value="medium" selected>Medium Priority</option>
+              <option value="high">High Priority</option>
             </select>
             <button class="btn-add full-width" onclick="addTask()">+ Add to Log</button>
           </div>
@@ -93,7 +94,7 @@
         <div class="card">
           <div class="card-header">
             <h2 class="card-title"><i data-lucide="users"></i> Crew's Study Log</h2>
-            <button class="btn-icon" onclick="loadChildrenTasks()" title="Refresh Log">🔄</button>
+            <button class="btn-icon" onclick="loadChildrenTasks()" title="Refresh Log"><i data-lucide="refresh-cw"></i></button>
           </div>
           <div class="task-list" id="parent-task-list"></div>
         </div>
@@ -105,7 +106,7 @@
           <div class="card">
             <div class="card-header">
               <h2 class="card-title"><i data-lucide="bell"></i> SOS Alerts</h2>
-              <button class="btn-icon" onclick="loadSOSAlerts()" title="Refresh Alerts">🔄</button>
+              <button class="btn-icon" onclick="loadSOSAlerts()" title="Refresh Alerts"><i data-lucide="refresh-cw"></i></button>
             </div>
             <div id="sos-list"></div>
           </div>
@@ -176,6 +177,29 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <!-- Custom Modal Dialogs -->
+  <div id="custom-modal-overlay" class="modal-overlay" style="display:none;">
+    <div id="custom-modal" class="custom-modal">
+      <div class="modal-icon" id="modal-icon"></div>
+      <div class="modal-message" id="modal-message"></div>
+      <div class="modal-buttons" id="modal-buttons"></div>
+    </div>
+  </div>
+
+  <!-- Location Permission Modal -->
+  <div id="location-modal-overlay" class="modal-overlay" style="display:none;">
+    <div class="custom-modal location-modal">
+      <div class="modal-icon"><i data-lucide="compass"></i></div>
+      <h3 style="margin:0 0 12px 0;color:var(--primary);font-family:'Pirata One',cursive;font-size:1.8rem;">Set Sail Navigator!</h3>
+      <div class="modal-message">
+        CircleLOG needs your location to track your voyage and keep your Captain informed of your whereabouts.
+      </div>
+      <div class="modal-buttons">
+        <button class="btn btn-primary" id="allow-location-btn">Allow Location</button>
+      </div>
+    </div>
+  </div>
+
   <script src="supabase.js"></script>
   <script src="auth.js"></script>
   <script src="app.js"></script>

@@ -183,17 +183,23 @@ function toggleDarkAuth() {
   const isDark = document.body.classList.contains('dark');
   localStorage.setItem('darkMode', isDark);
   const btn = document.getElementById('auth-dark-btn');
-  if (btn) btn.innerHTML = isDark ? 'Light' : 'Dark';
+  if (btn) {
+    btn.innerHTML = isDark ? '<i data-lucide="sun"></i>' : '<i data-lucide="moon"></i>';
+    if (window.lucide) lucide.createIcons();
+  }
 }
 
 // ── On page load: if already logged in → dashboard
 window.addEventListener('DOMContentLoaded', async () => {
   const isDark = localStorage.getItem('darkMode') === 'true';
+  const btn = document.getElementById('auth-dark-btn');
   if (isDark) {
     document.body.classList.add('dark');
-    const btn = document.getElementById('auth-dark-btn');
-    if (btn) btn.innerHTML = 'Light';
+    if (btn) btn.innerHTML = '<i data-lucide="sun"></i>';
+  } else {
+    if (btn) btn.innerHTML = '<i data-lucide="moon"></i>';
   }
+  if (window.lucide) lucide.createIcons();
 
   // Only redirect if we are on the login page (index.html or root)
   const isLoginPage = window.location.pathname.endsWith('index.html') || window.location.pathname === '/' || window.location.pathname === '';
