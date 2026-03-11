@@ -4,6 +4,40 @@
 
 let currentUser    = null; // logged-in user
 let currentProfile = null; // name, role from DB
+let overdueCheckRunning = false;
+
+async function getParentEmail() {
+  try {
+    const { data: c } = await supabaseClient
+      .from('profiles').select('parent_id')
+      .eq('id', currentUser.id).maybeSingle();
+    if (!c?.parent_id) return null;
+    const { data: p } = await supabaseClient
+      .from('profiles').select('email')
+      .eq('id', c.parent_id).maybeSingle();
+    return p?.email || null;
+  } catch { return null; }
+}
+
+async function sendEmail(subject, content) {
+  const to = await getParentEmail();
+  if (!to) return false;
+  try {
+    await emailjs.send('service_mzsla6l', 'template_gflzaqp',
+      { parent_email: to, subject, content });
+    return true;
+  } catch (e) {
+    console.error('Email error:', e);
+    return false;
+  }
+}
+
+function isOverdue(dueDateStr) {
+  if (!dueDateStr) return false;
+  const due   = new Date(dueDateStr); due.setHours(0,0,0,0);
+  const today = new Date();           today.setHours(0,0,0,0);
+  return due < today;
+}
 
 // ── CUSTOM MODAL FUNCTIONS ───────────────────
 function showCustomAlert(message, icon = 'alert-triangle') {
@@ -91,6 +125,21 @@ window.addEventListener('DOMContentLoaded', async () => {
   } else {
     await showChildDashboard();
   }
+
+  // Handle map resize on window resize (important for mobile)
+  let resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      if (window.mapInstances) {
+        Object.values(window.mapInstances).forEach(map => {
+          if (map && map.invalidateSize) {
+            map.invalidateSize();
+          }
+        });
+      }
+    }, 250);
+  });
 });
 
 // ── 2. LOAD PROFILE ──────────────────────────
@@ -146,6 +195,7 @@ async function showChildDashboard() {
 
   initMap('child-map');
   startLocationTracking();
+  await checkAndNotifyOverdue();
 }
 
 async function startLocationTracking() {
@@ -163,8 +213,8 @@ async function startLocationTracking() {
 
   const options = {
     enableHighAccuracy: true,
-    timeout: 10000,
-    maximumAge: 0
+    timeout: 30000,
+    maximumAge: 120000
   };
 
   console.log('Requesting constant GPS updates...');
@@ -183,19 +233,10 @@ async function startLocationTracking() {
       latitude: latitude,
       longitude: longitude,
       updated_at: new Date().toISOString()
-    });
+    }, { onConflict: 'child_id' });
 
     if (error) {
       console.error('GPS Save Error:', error.message);
-      // Fallback: If upsert fails due to missing constraint, try a basic insert
-      if (error.message.includes('ON CONFLICT')) {
-        await supabaseClient.from('locations').insert({
-          child_id: currentUser.id,
-          latitude: latitude,
-          longitude: longitude,
-          updated_at: new Date().toISOString()
-        });
-      }
     } else {
       console.log('GPS saved successfully to locations table');
       // Update the map marker without re-initializing the whole map
@@ -241,6 +282,8 @@ function updateChildMarker(lat, lng) {
 // ── 4. SHOW PARENT DASHBOARD ─────────────────
 async function showParentDashboard() {
   document.getElementById('parent-section').classList.remove('hidden');
+  const bannerNameParent = document.getElementById('banner-name-parent');
+  if (bannerNameParent) bannerNameParent.textContent = currentProfile.name;
   const children = await loadChildrenTasks();
   await loadSOSAlerts();
   
@@ -250,8 +293,12 @@ async function showParentDashboard() {
     initMap('parent-map');
   }
 
-  // Refresh alerts every 30 seconds
-  setInterval(loadSOSAlerts, 30000);
+  await loadSOSAlerts();
+  await loadOverdueAlerts();
+  setInterval(() => {
+    loadSOSAlerts();
+    loadOverdueAlerts();
+  }, 30000);
 }
 
 // ── 5. LOAD CHILD'S OWN TASKS ────────────────
@@ -424,6 +471,7 @@ async function toggleComplete(taskId, currentStatus) {
     .update({ is_complete: !currentStatus })
     .eq('id', taskId);
   await loadChildTasks();
+  await checkAndNotifyOverdue();
 }
 
 function toggleDarkMode() {
@@ -443,6 +491,7 @@ async function deleteTask(taskId) {
   if (!confirmed) return;
   await supabaseClient.from('tasks').delete().eq('id', taskId);
   await loadChildTasks();
+  await checkAndNotifyOverdue();
 }
 
 // ── 12. PROGRESS BAR ─────────────────────────
@@ -467,15 +516,119 @@ async function sendSOS() {
     message: 'SOS Alert!'
   });
 
+  await sendEmail(
+    'URGENT — ' + currentProfile.name + ' needs help!',
+    currentProfile.name + ' sent an SOS at ' +
+    new Date().toLocaleString() +
+    '.\n\nOpen CircleLog immediately.'
+  );
+
   const btn = document.getElementById('sos-btn');
   btn.innerHTML = '<i data-lucide="check-circle"></i> Alert Sent!';
   btn.disabled = true;
-  if (window.lucide) lucide.createIcons();
+  requestAnimationFrame(() => {
+    if (window.lucide) lucide.createIcons();
+  });
   setTimeout(() => {
     btn.innerHTML = '<i data-lucide="alert-triangle"></i> Send SOS';
     btn.disabled = false;
-    if (window.lucide) lucide.createIcons();
+    requestAnimationFrame(() => {
+      if (window.lucide) lucide.createIcons();
+    });
   }, 3000);
+}
+
+async function sendStudyReport() {
+  const btn = document.getElementById('report-btn');
+  const reset = () => {
+    btn.disabled = false;
+    btn.textContent = 'Send Report to Parent';
+  };
+  btn.disabled = true;
+  btn.textContent = 'Sending...';
+  try {
+    const { data: tasks } = await supabaseClient
+      .from('tasks').select('*')
+      .eq('user_id', currentUser.id);
+    if (!tasks?.length) { alert('No tasks yet!'); reset(); return; }
+    const total   = tasks.length;
+    const done    = tasks.filter(t => t.is_complete).length;
+    const pct     = Math.round((done / total) * 100);
+    const overdue = tasks
+      .filter(t => !t.is_complete && isOverdue(t.due_date))
+      .map(t => '- ' + t.title).join('\n') || 'None';
+    const sent = await sendEmail(
+      currentProfile.name + "'s Study Report",
+      'Completed: ' + done + '/' + total +
+      ' (' + pct + '%)\n\nOverdue:\n' + overdue
+    );
+    if (sent) {
+      btn.textContent = 'Sent!';
+      setTimeout(reset, 3000);
+    } else {
+      alert('No parent linked or email failed.');
+      reset();
+    }
+  } catch (e) { console.error(e); reset(); }
+}
+
+async function checkAndNotifyOverdue() {
+  if (overdueCheckRunning) return;
+  overdueCheckRunning = true;
+
+  try {
+    const { data: tasks } = await supabaseClient
+      .from('tasks').select('*')
+      .eq('user_id', currentUser.id)
+      .eq('is_complete', false);
+
+    if (!tasks?.length) { overdueCheckRunning = false; return; }
+
+    const overdueTasks = tasks.filter(t =>
+      isOverdue(t.due_date)
+    );
+    if (!overdueTasks.length) { overdueCheckRunning = false; return; }
+
+    const { data: already } = await supabaseClient
+      .from('overdue_notifications')
+      .select('task_id')
+      .eq('child_id', currentUser.id);
+
+    const notifiedIds = new Set(
+      (already || []).map(r => r.task_id)
+    );
+
+    const newOverdue = overdueTasks.filter(t =>
+      !notifiedIds.has(t.id)
+    );
+    if (!newOverdue.length) { overdueCheckRunning = false; return; }
+
+    const list = newOverdue
+      .map(t => '- ' + t.title).join('\n');
+
+    const sent = await sendEmail(
+      currentProfile.name + ' has overdue tasks!',
+      'The following tasks are now overdue:\n\n' +
+      list + '\n\nPlease check in with them.'
+    );
+
+    if (!sent) { overdueCheckRunning = false; return; }
+
+    const rows = newOverdue.map(t => ({
+      child_id: currentUser.id,
+      task_id:  t.id,
+      notified_at: new Date().toISOString()
+    }));
+
+    await supabaseClient
+      .from('overdue_notifications')
+      .insert(rows);
+
+  } catch (e) {
+    console.error('checkAndNotifyOverdue error:', e);
+  } finally {
+    overdueCheckRunning = false;
+  }
 }
 
 // ── 14. LOAD SOS ALERTS — parent ─────────────
@@ -529,6 +682,82 @@ async function deleteSOS(alertId) {
   await loadSOSAlerts();
 }
 
+async function loadOverdueAlerts() {
+  const el = document.getElementById('overdue-alerts');
+  if (!el) return;
+
+  try {
+    const { data: children } = await supabaseClient
+      .from('profiles').select('id, name')
+      .eq('parent_id', currentUser.id);
+
+    if (!children?.length) return;
+
+    const childIds = children.map(c => c.id);
+
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+    const { data: notifications } = await supabaseClient
+      .from('overdue_notifications')
+      .select('id, child_id, task_id, notified_at')
+      .in('child_id', childIds)
+      .gte('notified_at', sevenDaysAgo.toISOString())
+      .order('notified_at', { ascending: false })
+      .limit(10);
+
+    if (!notifications?.length) {
+      el.innerHTML = '';
+      return;
+    }
+
+    const seen = new Set();
+    const unique = notifications.filter(n => {
+      const key = `${n.child_id}-${n.task_id}`;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+
+    el.innerHTML = unique.map(n => {
+      const child = children.find(c =>
+        c.id === n.child_id
+      );
+      const time = new Date(n.notified_at)
+        .toLocaleString();
+      return `
+        <div class="sos-card"
+             style="border-color:#F4A933;">
+          <div class="sos-content">
+            <span>
+              <i data-lucide="clock" style="width:18px;height:18px;vertical-align:middle;margin-right:6px;stroke:#F4A933;"></i>
+              <strong>
+                ${child?.name || 'Crew'}
+              </strong>
+              has an overdue task
+            </span>
+            <span class="sos-time">${time}</span>
+          </div>
+          <button class="btn-icon btn-sos-delete" onclick="deleteOverdueNotification('${n.id}')" title="Dismiss Alert">
+            <i data-lucide="x"></i>
+          </button>
+        </div>`;
+    }).join('');
+    if (window.lucide) lucide.createIcons();
+
+  } catch (e) {
+    console.error('loadOverdueAlerts error:', e);
+  }
+}
+
+async function deleteOverdueNotification(notificationId) {
+  await supabaseClient
+    .from('overdue_notifications')
+    .delete()
+    .eq('id', notificationId);
+  await loadOverdueAlerts();
+}
+
 // ── 15. MAP — Leaflet.js ──────────────────────
 function initMap(containerId) {
   try {
@@ -570,6 +799,8 @@ function initMap(containerId) {
         className: 'custom-popup'
       })
       .openPopup();
+
+    setTimeout(() => map.invalidateSize(), 100);
   } catch (e) {
     console.error('Map failed to load:', e);
   }
@@ -610,6 +841,8 @@ function initParentMap(containerId, children) {
           className: 'custom-popup'
         });
     });
+
+    setTimeout(() => map.invalidateSize(), 100);
   } catch (e) {
     console.error('Parent map failed:', e);
   }

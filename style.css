@@ -487,6 +487,33 @@ h1, h2, h3 {
   padding: 8px !important;
 }
 
+/* --- Light Mode Navbar Override --- */
+body:not(.dark) .navbar {
+  background: var(--gradient-1);
+  border-bottom: 1px solid rgba(232, 80, 58, 0.2);
+}
+
+body:not(.dark) .nav-brand h1 {
+  background: none;
+  -webkit-background-clip: unset;
+  -webkit-text-fill-color: #FFFFFF;
+  color: #FFFFFF;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+body:not(.dark) .nav-user button {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(232, 80, 58, 0.2);
+  color: var(--text-dark);
+}
+
+body:not(.dark) .nav-user button:hover {
+  background: rgba(255, 255, 255, 1);
+  border-color: var(--primary);
+  color: var(--primary);
+  box-shadow: 0 4px 16px rgba(232, 80, 58, 0.3);
+}
+
 /* --- Dashboard Body --- */
 .dashboard-body {
   max-width: 1200px;
@@ -991,6 +1018,13 @@ h1, h2, h3 {
   height: 300px;
 }
 
+#sos-btn:disabled {
+  opacity: 0.85;
+  cursor: not-allowed;
+  animation: none;
+  background: linear-gradient(135deg, #27AE60, #5BA4CF);
+}
+
 .sos-card {
   display: flex;
   align-items: center;
@@ -1239,4 +1273,305 @@ h1, h2, h3 {
 @keyframes iconBounce {
   0%, 100% { transform: scale(1); }
   50% { transform: scale(1.2); }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   MOBILE RESPONSIVE STYLES
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+
+  /* ─── Global Fix ─── */
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    overflow-x: hidden;
+  }
+
+  /* ─── Navbar ─── */
+  .navbar {
+    height: auto !important;
+    padding: 12px 16px !important;
+    flex-wrap: wrap !important;
+    gap: 10px !important;
+  }
+
+  .nav-brand {
+    font-size: 1.1rem !important;
+  }
+
+  .nav-brand h1 {
+    font-size: 1.2rem !important;
+  }
+
+  .nav-user {
+    gap: 8px !important;
+    flex-wrap: wrap !important;
+  }
+
+  .nav-user button {
+    padding: 8px 12px !important;
+    font-size: 0.75rem !important;
+  }
+
+  .btn-profile,
+  .dark-toggle {
+    padding: 8px !important;
+  }
+
+  /* ─── Dashboard Body ─── */
+  .dashboard-body {
+    padding: 16px 12px !important;
+  }
+
+  /* ─── Dashboard Grid ─── */
+  .dashboard-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 16px !important;
+    grid-template-columns: unset !important;
+  }
+
+  /* ─── Cards ─── */
+  .card {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 0 16px 0 !important;
+    padding: 20px !important;
+    border-radius: 16px !important;
+  }
+
+  /* ─── Welcome Banner ─── */
+  .welcome-banner {
+    padding: 20px !important;
+    border-radius: 16px !important;
+    margin-bottom: 16px !important;
+  }
+
+  .welcome-banner h2 {
+    font-size: 1.4rem !important;
+  }
+
+  .welcome-banner p {
+    font-size: 0.9rem !important;
+  }
+
+  .banner-icon {
+    font-size: 2rem !important;
+  }
+
+  /* ─── Card Headers ─── */
+  .card-header {
+    flex-wrap: wrap !important;
+    gap: 12px !important;
+  }
+
+  .card-title {
+    font-size: 0.75rem !important;
+  }
+
+  /* ─── Map ─── */
+  #child-map,
+  #parent-map {
+    width: 100% !important;
+    height: 250px !important;
+    border-radius: 12px !important;
+    margin: 0 !important;
+  }
+
+  /* ─── Task Cards ─── */
+  .task-card {
+    width: 100% !important;
+    padding: 14px !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+  }
+
+  .task-info {
+    width: 100% !important;
+  }
+
+  .task-title {
+    font-size: 0.95rem !important;
+  }
+
+  .task-meta {
+    flex-wrap: wrap !important;
+    gap: 6px !important;
+  }
+
+  .task-actions {
+    width: 100% !important;
+    justify-content: flex-end !important;
+    gap: 8px !important;
+  }
+
+  /* ─── Badges ─── */
+  .badge {
+    font-size: 0.7rem !important;
+    padding: 3px 8px !important;
+  }
+
+  /* ─── Add Task Form ─── */
+  .add-task-form {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+  }
+
+  .add-task-form input,
+  .add-task-form select {
+    width: 100% !important;
+    font-size: 0.9rem !important;
+  }
+
+  /* ─── Buttons - Specific Rules ─── */
+  .btn-add {
+    width: 100% !important;
+    padding: 14px !important;
+    font-size: 0.9rem !important;
+  }
+
+  .btn-icon {
+    width: auto !important;
+    min-width: 36px !important;
+    padding: 8px !important;
+  }
+
+  .btn-logout {
+    width: auto !important;
+    padding: 8px 12px !important;
+  }
+
+  /* ─── Input Fields ─── */
+  input[type="text"],
+  input[type="date"],
+  input[type="email"],
+  input[type="password"],
+  select,
+  textarea {
+    width: 100% !important;
+    font-size: 0.95rem !important;
+    padding: 12px !important;
+  }
+
+  /* ─── SOS Section ─── */
+  #sos-btn {
+    width: 100% !important;
+    padding: 16px !important;
+    font-size: 1.05rem !important;
+  }
+
+  /* ─── SOS Cards & Overdue Alerts ─── */
+  .sos-card {
+    width: 100% !important;
+    padding: 14px !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+  }
+
+  .sos-content {
+    width: 100% !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 6px !important;
+  }
+
+  .sos-time {
+    font-size: 0.75rem !important;
+  }
+
+  .btn-sos-delete {
+    align-self: flex-end !important;
+    width: auto !important;
+  }
+
+  /* ─── Progress Bar ─── */
+  .progress-section {
+    width: 100% !important;
+    margin-bottom: 16px !important;
+  }
+
+  .progress-track {
+    height: 10px !important;
+  }
+
+  /* ─── Profile Modal ─── */
+  .profile-overlay {
+    padding: 20px !important;
+  }
+
+  .profile-card {
+    width: 90% !important;
+    max-width: 400px !important;
+    padding: 24px !important;
+  }
+
+  /* ─── Auth Pages ─── */
+  .auth-card {
+    width: 90% !important;
+    max-width: 400px !important;
+    padding: 28px 20px !important;
+    margin: 24px auto !important;
+  }
+
+  /* ─── Empty Messages ─── */
+  .empty-msg {
+    font-size: 0.85rem !important;
+    padding: 16px !important;
+  }
+
+  /* ─── Child Group (Parent View) ─── */
+  .child-group {
+    margin-bottom: 20px !important;
+  }
+
+  .child-name {
+    font-size: 0.9rem !important;
+  }
+
+  .child-progress {
+    font-size: 0.75rem !important;
+  }
+
+  /* ─── Report Button ─── */
+  #report-btn {
+    margin-top: 12px !important;
+  }
+}
+
+/* ─── Extra small screens (under 400px) ─── */
+@media (max-width: 400px) {
+
+  .navbar {
+    padding: 10px 12px !important;
+  }
+
+  .nav-brand h1 {
+    font-size: 1.05rem !important;
+  }
+
+  .welcome-banner h2 {
+    font-size: 1.2rem !important;
+  }
+
+  .card {
+    padding: 16px !important;
+  }
+
+  #child-map,
+  #parent-map {
+    height: 200px !important;
+  }
+
+  .task-card {
+    padding: 12px !important;
+  }
+
+  .btn-add,
+  #sos-btn {
+    font-size: 0.85rem !important;
+  }
 }

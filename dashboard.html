@@ -6,6 +6,8 @@
   <title>CircleLOG — Dashboard</title>
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script>emailjs.init('JeEDWv_a4eJPWKzs2');</script>
 </head>
 <body class="dashboard-page">
 
@@ -27,17 +29,16 @@
 
   <main class="dashboard-body">
 
-    <!-- Welcome Banner -->
-    <div class="welcome-banner">
-      <span class="banner-icon">🏴‍☠️</span>
-      <div>
-        <h2>Welcome, <span id="banner-name"></span>!</h2>
-        <p>"The sea is vast, but your crew is always close."</p>
-      </div>
-    </div>
-
     <!-- CHILD SECTION (hidden by default) -->
     <div id="child-section" class="hidden">
+      <!-- Welcome Banner -->
+      <div class="welcome-banner">
+        <span class="banner-icon">🏴‍☠️</span>
+        <div>
+          <h2>Welcome, <span id="banner-name"></span>!</h2>
+          <p>"The sea is vast, but your captain is always close."</p>
+        </div>
+      </div>
       <div class="dashboard-grid">
 
         <!-- Tasks Card -->
@@ -55,6 +56,12 @@
               <div class="progress-fill" id="progress-bar"></div>
             </div>
           </div>
+          <button class="btn-add full-width"
+                  onclick="sendStudyReport()"
+                  id="report-btn"
+                  style="margin-top:12px;">
+            Send Report to Parent
+          </button>
           <!-- Add Task Form -->
           <div class="add-task-form">
             <input type="text" id="task-title" placeholder="Task title" class="full-width"/>
@@ -90,6 +97,14 @@
 
     <!-- PARENT SECTION (hidden by default) -->
     <div id="parent-section" class="hidden">
+      <!-- Welcome Banner -->
+      <div class="welcome-banner">
+        <span class="banner-icon">🏴‍☠️</span>
+        <div>
+          <h2>Welcome, <span id="banner-name-parent"></span>!</h2>
+          <p>"The sea is vast, but your crew is always close."</p>
+        </div>
+      </div>
       <div class="dashboard-grid">
         <div class="card">
           <div class="card-header">
@@ -105,10 +120,11 @@
           </div>
           <div class="card">
             <div class="card-header">
-              <h2 class="card-title"><i data-lucide="bell"></i> SOS Alerts</h2>
+              <h2 class="card-title"><i data-lucide="bell"></i> Alerts</h2>
               <button class="btn-icon" onclick="loadSOSAlerts()" title="Refresh Alerts"><i data-lucide="refresh-cw"></i></button>
             </div>
             <div id="sos-list"></div>
+            <div id="overdue-alerts"></div>
           </div>
         </div>
       </div>
