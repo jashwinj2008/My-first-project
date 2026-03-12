@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CircleLOG — Login</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="auth-page">
+
+  <div class="auth-card">
+    <button id="auth-dark-btn" class="auth-dark-toggle" onclick="toggleDarkAuth()"><i data-lucide="moon"></i></button>
+
+    <!-- Logo -->
+    <div class="auth-logo">
+      <span class="compass-icon">🧭</span>
+      <h1>CircleLOG</h1>
+      <p class="logo-sub">Family Study & Safety · Built by Jashwin</p>
+    </div>
+
+    <!-- Error box (hidden until needed) -->
+    <div id="auth-error" class="auth-error hidden"></div>
+
+    <!-- Tabs -->
+    <div class="auth-tabs">
+      <button id="tab-login" class="active" onclick="showLogin()">Login</button>
+      <button id="tab-signup" onclick="showSignup()">Sign Up</button>
+    </div>
+
+    <!-- LOGIN FORM -->
+    <div id="login-form">
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="login-email" placeholder="your@email.com" />
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="login-password" placeholder="••••••••" />
+      </div>
+      <button class="btn-primary" id="auth-submit-btn" data-label="Set Sail →"
+              onclick="handleLogin()">
+        Set Sail →
+      </button>
+    </div>
+
+    <!-- SIGNUP FORM -->
+    <div id="signup-form" class="hidden">
+      <div class="form-group">
+        <label>Your Name</label>
+        <input type="text" id="signup-name" placeholder="e.g. Jashwin" />
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="signup-email" placeholder="your@email.com" />
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="signup-password" placeholder="Min 6 characters" />
+      </div>
+      <div class="form-group">
+        <label>I am a...</label>
+        <select id="signup-role" onchange="handleRoleChange()">
+          <option value="">Select your role</option>
+          <option value="parent">⚓ Parent (Captain)</option>
+          <option value="child">🏴‍☠️ Child (Crew)</option>
+        </select>
+      </div>
+      <!-- Only visible when role = child -->
+      <div id="parent-email-field" class="form-group hidden">
+        <label>Parent's Email</label>
+        <input type="email" id="signup-parent-email" placeholder="parent@email.com" />
+      </div>
+      <button class="btn-primary" id="auth-submit-btn-signup" data-label="Join the Crew →"
+              onclick="handleSignup()">
+        Join the Crew →
+      </button>
+    </div>
+
+  </div>
+
+  <!-- Load Supabase from CDN (must be before our files) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase.js"></script>
+  <script src="auth.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>lucide.createIcons();</script>
+</body>
+</html>

@@ -168,7 +168,7 @@ async function handleLogin() {
 // ── LOGOUT ───────────────────────────────────
 async function handleLogout() {
   await supabaseClient.auth.signOut();
-  window.location.href = 'index.html';
+  window.location.href = 'login.html';
 }
 
 // ── Helper: show error ────────────────────────
@@ -201,8 +201,8 @@ window.addEventListener('DOMContentLoaded', async () => {
   }
   if (window.lucide) lucide.createIcons();
 
-  // Only redirect if we are on the login page (index.html or root)
-  const isLoginPage = window.location.pathname.endsWith('index.html') || window.location.pathname === '/' || window.location.pathname === '';
+  // Only redirect if we are on the login page (login.html or root)
+  const isLoginPage = window.location.pathname.endsWith('login.html') || window.location.pathname === '/' || window.location.pathname === '';
   if (!isLoginPage) return;
 
   const { data: { session } } = await supabaseClient.auth.getSession();

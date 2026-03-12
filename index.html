@@ -1,88 +1,259 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CircleLOG — Login</title>
-  <link rel="stylesheet" href="style.css" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CircleLog</title>
+<link href="https://fonts.googleapis.com/css2?family=Pirata+One&family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{width:100vw;height:100vh;overflow:hidden;font-family:'Sora',sans-serif;position:relative;background:linear-gradient(to bottom,#03060F 0%,#0C1E45 30%,#1A3F6F 60%,#C97040 100%)}
+.scene{width:100%;height:100%;position:relative;overflow:hidden}
+.stars{position:absolute;width:100%;height:60%;top:0;left:0;z-index:1}
+.star{position:absolute;width:2px;height:2px;background:#fff;border-radius:50%;box-shadow:0 0 4px #fff;animation:twinkle 2s ease-in-out infinite}
+.star:nth-child(1){top:10%;left:15%;animation-delay:0s}
+.star:nth-child(2){top:20%;left:25%;animation-delay:0.3s}
+.star:nth-child(3){top:15%;left:45%;animation-delay:0.6s}
+.star:nth-child(4){top:25%;left:65%;animation-delay:0.9s}
+.star:nth-child(5){top:12%;left:80%;animation-delay:1.2s}
+.star:nth-child(6){top:30%;left:10%;animation-delay:0.4s}
+.star:nth-child(7){top:18%;left:55%;animation-delay:0.7s}
+.star:nth-child(8){top:8%;left:35%;animation-delay:1s}
+.star:nth-child(9){top:22%;left:75%;animation-delay:0.2s}
+.star:nth-child(10){top:28%;left:90%;animation-delay:0.5s}
+.star:nth-child(11){top:5%;left:50%;animation-delay:0.8s}
+.star:nth-child(12){top:35%;left:20%;animation-delay:1.1s}
+.star:nth-child(13){top:32%;left:40%;animation-delay:0.3s}
+.star:nth-child(14){top:14%;left:70%;animation-delay:0.9s}
+.star:nth-child(15){top:26%;left:85%;animation-delay:0.6s}
+.moon{position:absolute;top:8%;right:12%;width:80px;height:80px;background:#FFE88A;border-radius:50%;box-shadow:0 0 40px rgba(255,232,138,0.6),0 0 80px rgba(255,232,138,0.3);z-index:2}
+.fog{position:absolute;bottom:60%;left:0;width:100%;height:100px;background:linear-gradient(to bottom,rgba(255,255,255,0),rgba(255,255,255,0.05),rgba(255,255,255,0));animation:fogDrift 20s linear infinite;z-index:3}
+.ocean{position:absolute;bottom:0;left:0;width:100%;height:40%;background:linear-gradient(to bottom,#0E5078,#062840,#03141F);z-index:4}
+.wave{position:absolute;bottom:0;left:0;width:200%;height:100px;background:transparent}
+.wave1{height:120px;opacity:0.3;animation:waveScroll1 8s linear infinite}
+.wave2{height:100px;opacity:0.4;animation:waveScroll2 6s linear infinite}
+.wave3{height:80px;opacity:0.5;animation:waveScroll3 10s linear infinite}
+.wave4{height:60px;opacity:0.6;animation:waveScroll4 7s linear infinite}
+.wave svg{width:100%;height:100%}
+.title{position:absolute;top:25%;left:50%;transform:translateX(-50%);text-align:center;z-index:50;animation:titleAnim 7s ease forwards}
+.title h1{font-family:'Pirata One',cursive;font-size:4.5rem;color:#fff;text-shadow:0 0 20px #F4A933,0 0 40px #F4A933,0 4px 8px rgba(0,0,0,0.5);margin-bottom:12px;opacity:0;animation:fadeUp 1s ease forwards;animation-delay:0.5s}
+.title p{font-family:'Sora',sans-serif;font-size:1.1rem;color:#fff;letter-spacing:3px;opacity:0;animation:fadeUp 1s ease forwards;animation-delay:1s}
+.ship-container{position:absolute;bottom:25%;left:-400px;width:300px;height:200px;z-index:40;animation:shipEnter 2.5s cubic-bezier(0.25,0.46,0.45,0.94) forwards,shipBob 3s ease-in-out infinite;animation-delay:1.5s,4s}
+.ship{position:relative;width:100%;height:100%}
+.hull{position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:260px;height:70px;background:linear-gradient(135deg,#8B4513 0%,#5C2C0E 50%,#3A1A05 100%);border-radius:0 0 130px 130px;clip-path:polygon(8% 0,92% 0,98% 100%,2% 100%);box-shadow:inset 0 -10px 20px rgba(0,0,0,0.5),0 5px 15px rgba(0,0,0,0.4)}
+.hull::before{content:'';position:absolute;top:-12px;left:8%;width:84%;height:25px;background:linear-gradient(to right,#5C2C0E,#7B3A12,#5C2C0E);border-radius:50%;box-shadow:inset 0 -5px 10px rgba(0,0,0,0.6)}
+.hull::after{content:'';position:absolute;top:15px;left:20px;width:12px;height:8px;background:#1A1A1A;border-radius:50%;box-shadow:50px 0 0 #1A1A1A,100px 0 0 #1A1A1A,150px 0 0 #1A1A1A,180px 0 0 #1A1A1A}
+.deck{position:absolute;bottom:60px;left:50%;transform:translateX(-50%);width:240px;height:18px;background:linear-gradient(to bottom,#6D3A15,#4A1F05);border-radius:6px;box-shadow:0 -3px 8px rgba(0,0,0,0.5),inset 0 2px 4px rgba(139,69,19,0.3)}
+.deck::before{content:'';position:absolute;top:50%;left:10px;transform:translateY(-50%);width:4px;height:4px;background:#3A1A05;border-radius:50%;box-shadow:15px 0 0 #3A1A05,30px 0 0 #3A1A05,45px 0 0 #3A1A05,60px 0 0 #3A1A05,75px 0 0 #3A1A05,90px 0 0 #3A1A05,105px 0 0 #3A1A05,120px 0 0 #3A1A05,135px 0 0 #3A1A05,150px 0 0 #3A1A05,165px 0 0 #3A1A05,180px 0 0 #3A1A05,195px 0 0 #3A1A05,210px 0 0 #3A1A05}
+.cabin{position:absolute;bottom:76px;left:50%;transform:translateX(-50%);width:90px;height:48px;background:linear-gradient(135deg,#7B3A12,#4A1F05);border:3px solid #3A1A05;border-radius:6px;box-shadow:0 4px 12px rgba(0,0,0,0.6),inset 0 -5px 10px rgba(0,0,0,0.4)}
+.cabin::before{content:'';position:absolute;top:-8px;left:10%;width:80%;height:12px;background:linear-gradient(to right,#5C2C0E,#4A1F05);clip-path:polygon(10% 100%,50% 0,90% 100%);box-shadow:0 -2px 5px rgba(0,0,0,0.5)}
+.cabin::after{content:'';position:absolute;top:12px;left:15px;width:22px;height:18px;background:linear-gradient(135deg,#FFE88A,#D4A574);opacity:0.9;border-radius:3px;border:2px solid #3A1A05;box-shadow:35px 0 0 0 #3A1A05,35px 0 0 2px #3A1A05,inset 0 0 8px rgba(255,232,138,0.6)}
+.mast{position:absolute;bottom:76px;width:8px;background:linear-gradient(to right,#2A1505,#4A1F05,#2A1505);box-shadow:2px 0 4px rgba(0,0,0,0.6),inset 1px 0 2px rgba(0,0,0,0.8)}
+.mast1{left:42%;height:140px}
+.mast1::before{content:'';position:absolute;top:30px;left:50%;width:1px;height:60px;background:rgba(58,26,5,0.4);transform:translateX(-50%) rotate(25deg);transform-origin:top}
+.mast1::after{content:'';position:absolute;top:30px;left:50%;width:1px;height:60px;background:rgba(58,26,5,0.4);transform:translateX(-50%) rotate(-25deg);transform-origin:top}
+.mast2{left:68%;height:110px}
+.mast2::before{content:'';position:absolute;top:20px;left:50%;width:1px;height:50px;background:rgba(58,26,5,0.4);transform:translateX(-50%) rotate(30deg);transform-origin:top}
+.mast2::after{content:'';position:absolute;top:20px;left:50%;width:1px;height:50px;background:rgba(58,26,5,0.4);transform:translateX(-50%) rotate(-30deg);transform-origin:top}
+.sail{position:absolute;background:linear-gradient(145deg,#FFFBF0 0%,#F5EDD0 30%,#E5D5A8 70%,#D4C59A 100%);border-radius:12px 2px 12px 2px;animation:sailPuff 3s ease-in-out infinite;box-shadow:inset -5px 0 10px rgba(0,0,0,0.15),3px 3px 8px rgba(0,0,0,0.3);border:2px solid rgba(139,117,85,0.3)}
+.sail1{bottom:96px;left:38%;width:60px;height:95px;animation-delay:0s;clip-path:polygon(15% 0,85% 0,90% 100%,10% 100%)}
+.sail1::before{content:'';position:absolute;top:15%;left:15%;width:70%;height:2px;background:rgba(139,117,85,0.4);box-shadow:0 15px 0 rgba(139,117,85,0.3),0 30px 0 rgba(139,117,85,0.3),0 45px 0 rgba(139,117,85,0.3)}
+.sail2{bottom:120px;left:33%;width:55px;height:85px;animation-delay:0.3s;clip-path:polygon(20% 0,80% 0,90% 100%,5% 100%)}
+.sail2::before{content:'';position:absolute;top:15%;left:15%;width:70%;height:2px;background:rgba(139,117,85,0.4);box-shadow:0 15px 0 rgba(139,117,85,0.3),0 30px 0 rgba(139,117,85,0.3)}
+.sail3{bottom:88px;left:65%;width:50px;height:75px;animation-delay:0.6s;clip-path:polygon(15% 0,85% 0,92% 100%,8% 100%)}
+.sail3::before{content:'';position:absolute;top:15%;left:15%;width:70%;height:2px;background:rgba(139,117,85,0.4);box-shadow:0 15px 0 rgba(139,117,85,0.3),0 30px 0 rgba(139,117,85,0.3)}
+.crow-nest{position:absolute;bottom:210px;left:42%;width:24px;height:12px;background:linear-gradient(to bottom,#5C2C0E,#3A1A05);border-radius:50%;box-shadow:0 3px 6px rgba(0,0,0,0.6),inset 0 -2px 4px rgba(0,0,0,0.5)}
+.crow-nest::before{content:'';position:absolute;top:-4px;left:50%;transform:translateX(-50%);width:20px;height:6px;background:#4A1F05;border-radius:50%;box-shadow:0 -2px 4px rgba(0,0,0,0.4)}
+.crow-nest::after{content:'';position:absolute;bottom:-8px;left:50%;transform:translateX(-50%);width:2px;height:8px;background:#3A1A05;box-shadow:1px 0 0 rgba(0,0,0,0.6)}
+.flag{position:absolute;bottom:225px;left:46%;width:32px;height:28px;background:#1A1A1A;border-radius:0 4px 4px 0;transform-origin:left center;animation:flagWave 0.8s ease-in-out infinite;box-shadow:2px 2px 6px rgba(0,0,0,0.5)}
+.flag::before{content:'☠';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:18px;color:#FFFFFF;text-shadow:0 0 4px rgba(255,255,255,0.8)}
+.flag::after{content:'';position:absolute;left:-5px;top:-10px;width:5px;height:50px;background:linear-gradient(to bottom,#2A1505,#4A1F05);box-shadow:-1px 0 3px rgba(0,0,0,0.6)}
+.bow{position:absolute;bottom:38px;left:88%;width:38px;height:32px;background:linear-gradient(135deg,#8B4513,#5C2C0E);clip-path:polygon(0 100%,100% 40%,100% 100%);box-shadow:-3px 3px 8px rgba(0,0,0,0.5)}
+.bow::before{content:'';position:absolute;top:20%;left:-8px;width:12px;height:8px;background:#6D3A15;clip-path:polygon(0 50%,100% 0,100% 100%);box-shadow:-2px 0 4px rgba(0,0,0,0.4)}
+.bow::after{content:'';position:absolute;top:-5px;right:0;width:3px;height:35px;background:linear-gradient(to bottom,#3A1A05,transparent);transform:rotate(-15deg);transform-origin:bottom}
+.splash{position:absolute;bottom:10px;left:90%;width:4px;height:4px;background:rgba(255,255,255,0.6);border-radius:50%;animation:splashDrop 1.5s ease-in-out infinite}
+.splash:nth-child(20){animation-delay:0s}
+.splash:nth-child(21){animation-delay:0.3s;left:95%}
+.splash:nth-child(22){animation-delay:0.6s;left:92%;bottom:15px}
+.wake{position:absolute;bottom:15px;left:-20px;width:60px;height:2px;background:rgba(255,255,255,0.2);border-radius:50%;opacity:0.5}
+.compass-scene{position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0);z-index:60;opacity:0;animation:compassRevealScene 2s ease forwards;animation-delay:4s;display:flex;align-items:center;justify-content:center}
+.compass{position:relative;width:320px;height:320px;transform:scale(0) translateY(180px) rotate(-180deg);opacity:0;filter:drop-shadow(0 0 30px rgba(244,169,51,0.9));animation:compassEmerge 1.8s cubic-bezier(0.34,1.56,0.64,1) forwards,compassGlow 1.5s ease-in-out forwards,compassZoom 1.5s cubic-bezier(0.68,-0.55,0.27,1.55) forwards;animation-delay:4.3s,5.8s,6.2s}
+.compass-outer{position:absolute;top:0;left:0;width:100%;height:100%;border:12px solid #F4A933;border-radius:50%;box-shadow:0 0 60px rgba(244,169,51,1),0 0 120px rgba(244,169,51,0.8),inset 0 0 30px rgba(244,169,51,0.4);background:rgba(0,0,0,0.4);animation:compassOuterGlow 2s ease-in-out infinite;animation-delay:6s}
+.mark{position:absolute;width:6px;height:30px;background:linear-gradient(to bottom,#F4A933,#E8503A);opacity:0;animation:fadeUp 0.4s ease forwards;border-radius:3px}
+.mark-n{top:-3px;left:50%;transform:translateX(-50%);animation-delay:5.2s;box-shadow:0 0 10px rgba(244,169,51,0.8)}
+.mark-s{bottom:-3px;left:50%;transform:translateX(-50%);animation-delay:5.3s;box-shadow:0 0 10px rgba(244,169,51,0.8)}
+.mark-e{right:-3px;top:50%;transform:translateY(-50%) rotate(90deg);animation-delay:5.4s;box-shadow:0 0 10px rgba(244,169,51,0.8)}
+.mark-w{left:-3px;top:50%;transform:translateY(-50%) rotate(90deg);animation-delay:5.5s;box-shadow:0 0 10px rgba(244,169,51,0.8)}
+.compass-outer::before{content:'';position:absolute;top:-6px;left:50%;transform:translateX(-50%);width:4px;height:20px;background:#F4A933;clip-path:polygon(50% 0,100% 100%,0 100%);box-shadow:0 0 8px rgba(244,169,51,0.9)}
+.compass-outer::after{content:'';position:absolute;bottom:-6px;left:50%;transform:translateX(-50%) rotate(180deg);width:4px;height:20px;background:#F4A933;clip-path:polygon(50% 0,100% 100%,0 100%);box-shadow:0 0 8px rgba(244,169,51,0.9)}
+.compass-inner{position:absolute;top:15%;left:15%;width:70%;height:70%;background:radial-gradient(circle,rgba(255,255,255,0.15),rgba(20,20,40,0.9));border-radius:50%;border:6px solid #E8503A;box-shadow:0 0 20px rgba(232,80,58,0.6),inset 0 0 20px rgba(0,0,0,0.8);opacity:0;animation:fadeUp 0.6s ease forwards;animation-delay:4.8s}
+.compass-inner::before{content:'';position:absolute;top:50%;left:50%;width:90%;height:90%;border:2px solid rgba(244,169,51,0.3);border-radius:50%;transform:translate(-50%,-50%)}
+.compass-inner::after{content:'';position:absolute;top:50%;left:50%;width:70%;height:70%;border:1px solid rgba(244,169,51,0.2);border-radius:50%;transform:translate(-50%,-50%)}
+.compass-inner::before{content:'';position:absolute;top:50%;left:50%;width:90%;height:90%;border:2px solid rgba(244,169,51,0.3);border-radius:50%;transform:translate(-50%,-50%)}
+.compass-inner::after{content:'';position:absolute;top:50%;left:50%;width:70%;height:70%;border:1px solid rgba(244,169,51,0.2);border-radius:50%;transform:translate(-50%,-50%)}
+.compass-needle{position:absolute;top:50%;left:50%;width:10px;height:110px;background:linear-gradient(to bottom,#FF6B52 0%,#E8503A 30%,#E8503A 50%,#F4A933 50%,#F4A933 70%,#FFB84D 100%);transform:translate(-50%,-50%) rotate(0deg);transform-origin:center;border-radius:5px 5px 2px 2px;box-shadow:0 0 20px rgba(232,80,58,1),inset 0 -2px 5px rgba(0,0,0,0.5),inset 0 2px 5px rgba(255,255,255,0.3);opacity:0;animation:needleReveal 2.2s cubic-bezier(0.68,-0.55,0.27,1.55) forwards;animation-delay:5s;z-index:4;border:1px solid rgba(0,0,0,0.3)}
+.compass-needle::before{content:'';position:absolute;top:-8px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:8px solid transparent;border-right:8px solid transparent;border-bottom:12px solid #E8503A;filter:drop-shadow(0 0 8px rgba(232,80,58,0.8))}
+.compass-needle::after{content:'';position:absolute;bottom:-8px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:8px solid transparent;border-right:8px solid transparent;border-top:12px solid #F4A933;filter:drop-shadow(0 0 8px rgba(244,169,51,0.8))}
+.compass-center{position:absolute;top:50%;left:50%;width:28px;height:28px;background:#F4A933;border-radius:50%;transform:translate(-50%,-50%);box-shadow:0 0 20px #F4A933,0 0 40px rgba(244,169,51,0.6);border:3px solid #fff;z-index:5}
+.compass-center::before{content:'';position:absolute;top:50%;left:50%;width:12px;height:12px;background:#E8503A;border-radius:50%;transform:translate(-50%,-50%);box-shadow:0 0 10px rgba(232,80,58,0.8)}
+.compass-center::before{content:'';position:absolute;top:50%;left:50%;width:12px;height:12px;background:#E8503A;border-radius:50%;transform:translate(-50%,-50%);box-shadow:0 0 10px rgba(232,80,58,0.8)}
+.compass-label{position:absolute;font-family:'Pirata One',cursive;font-size:2.8rem;color:#F4A933;font-weight:bold;text-shadow:0 0 15px #F4A933,0 0 30px rgba(244,169,51,1),0 3px 6px rgba(0,0,0,0.9);opacity:0;animation:fadeUp 0.5s ease forwards;z-index:10;display:flex;align-items:center;justify-content:center;width:50px;height:50px;background:radial-gradient(circle,rgba(244,169,51,0.15),transparent);border-radius:50%}
+.label-n{top:-10%;left:50%;transform:translate(-50%,-50%);animation-delay:5.2s}
+.label-n::before{content:'';position:absolute;top:45px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:10px solid transparent;border-right:10px solid transparent;border-top:18px solid #F4A933;filter:drop-shadow(0 0 8px rgba(244,169,51,0.8))}
+.label-s{bottom:-10%;left:50%;transform:translate(-50%,50%);animation-delay:5.3s}
+.label-s::before{content:'';position:absolute;bottom:45px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:10px solid transparent;border-right:10px solid transparent;border-bottom:18px solid #F4A933;filter:drop-shadow(0 0 8px rgba(244,169,51,0.8))}
+.label-e{right:-10%;top:50%;transform:translate(50%,-50%);animation-delay:5.4s}
+.label-e::before{content:'';position:absolute;right:45px;top:50%;transform:translateY(-50%);width:0;height:0;border-top:10px solid transparent;border-bottom:10px solid transparent;border-right:18px solid #F4A933;filter:drop-shadow(0 0 8px rgba(244,169,51,0.8))}
+.label-w{left:-10%;top:50%;transform:translate(-50%,-50%);animation-delay:5.5s}
+.label-w::before{content:'';position:absolute;left:45px;top:50%;transform:translateY(-50%);width:0;height:0;border-top:10px solid transparent;border-bottom:10px solid transparent;border-left:18px solid #F4A933;filter:drop-shadow(0 0 8px rgba(244,169,51,0.8))}
+.compass-ring{position:absolute;top:50%;left:50%;border:3px solid rgba(244,169,51,0.4);border-radius:50%;transform:translate(-50%,-50%);animation:ringPulseOut 1.2s ease-out forwards}
+.ring1{width:280px;height:280px;animation-delay:5.6s}
+.ring2{width:340px;height:340px;animation-delay:5.75s}
+.ring3{width:400px;height:400px;animation-delay:5.9s}
+.rays{position:absolute;top:0;left:0;width:100%;height:100%;opacity:0;animation:rayRotateIn 6s linear infinite,raysAppear 0.8s ease forwards;animation-delay:5.3s,5.3s}
+.ray{position:absolute;top:50%;left:50%;width:4px;height:150px;background:linear-gradient(to bottom,rgba(244,169,51,0.6),transparent);transform-origin:center;border-radius:2px}
+.ray:nth-child(1){transform:translate(-50%,-100%) rotate(0deg)}
+.ray:nth-child(2){transform:translate(-50%,-100%) rotate(45deg)}
+.ray:nth-child(3){transform:translate(-50%,-100%) rotate(90deg)}
+.ray:nth-child(4){transform:translate(-50%,-100%) rotate(135deg)}
+.ray:nth-child(5){transform:translate(-50%,-100%) rotate(180deg)}
+.ray:nth-child(6){transform:translate(-50%,-100%) rotate(225deg)}
+.ray:nth-child(7){transform:translate(-50%,-100%) rotate(270deg)}
+.ray:nth-child(8){transform:translate(-50%,-100%) rotate(315deg)}
+.loading{position:absolute;bottom:15%;left:50%;transform:translateX(-50%);font-family:'Sora',sans-serif;font-size:1.2rem;color:#fff;letter-spacing:2px;opacity:0;animation:fadeUp 0.8s ease forwards;animation-delay:6s}
+.dot{display:inline-block;width:8px;height:8px;margin:0 4px;background:#F4A933;border-radius:50%;animation:dotBounce 1.4s ease-in-out infinite}
+.dot:nth-child(2){animation-delay:0.2s}
+.dot:nth-child(3){animation-delay:0.4s}
+.flash{position:absolute;top:0;left:0;width:100%;height:100%;background:#fff;opacity:0;z-index:100;animation:flashWhite 1s ease forwards;animation-delay:6s;pointer-events:none}
+@keyframes fadeUp{0%{opacity:0;transform:translateY(30px)}100%{opacity:1;transform:translateY(0)}}
+@keyframes twinkle{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.3;transform:scale(0.8)}}
+@keyframes fogDrift{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+@keyframes waveScroll1{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+@keyframes waveScroll2{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+@keyframes waveScroll3{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+@keyframes waveScroll4{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+@keyframes shipEnter{0%{left:-400px}100%{left:calc(50% - 150px)}}
+@keyframes shipBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-15px)}}
+@keyframes sailPuff{0%,100%{transform:scaleX(1) skewX(0deg)}25%{transform:scaleX(1.12) skewX(3deg)}50%{transform:scaleX(1.18) skewX(5deg)}75%{transform:scaleX(1.12) skewX(3deg)}}
+@keyframes flagWave{0%,100%{transform:rotate(0deg) scaleY(1)}25%{transform:rotate(-8deg) scaleY(0.95)}75%{transform:rotate(8deg) scaleY(0.95)}}
+@keyframes splashDrop{0%{opacity:0.8;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-30px) scale(0.3)}}
+@keyframes compassRevealScene{0%{opacity:0;background:rgba(0,0,0,0);backdrop-filter:blur(0px)}100%{opacity:1;background:rgba(0,0,0,0.92);backdrop-filter:blur(8px)}}
+@keyframes compassEmerge{0%{transform:scale(0) translateY(180px) rotate(-180deg);opacity:0;filter:drop-shadow(0 0 0 rgba(244,169,51,0))}50%{transform:scale(0.6) translateY(80px) rotate(90deg);opacity:0.7;filter:drop-shadow(0 0 40px rgba(244,169,51,0.7))}100%{transform:scale(1) translateY(0) rotate(360deg);opacity:1;filter:drop-shadow(0 0 60px rgba(244,169,51,1))}}
+@keyframes compassGlow{0%{filter:drop-shadow(0 0 60px rgba(244,169,51,1))}50%{filter:drop-shadow(0 0 100px rgba(244,169,51,1)) drop-shadow(0 0 150px rgba(232,80,58,0.8))}100%{filter:drop-shadow(0 0 80px rgba(244,169,51,1))}}
+@keyframes compassZoom{0%{transform:scale(1) translateY(0) rotate(360deg)}100%{transform:scale(10) translateY(0) rotate(360deg);opacity:0}}
+
+@keyframes needleReveal{0%{transform:translate(-50%,-50%) rotate(0deg);opacity:0}30%{opacity:1}100%{transform:translate(-50%,-50%) rotate(1080deg)}}
+@keyframes compassOuterGlow{0%,100%{box-shadow:0 0 60px rgba(244,169,51,1),0 0 120px rgba(244,169,51,0.8),inset 0 0 30px rgba(244,169,51,0.4);border-width:12px}50%{box-shadow:0 0 100px rgba(244,169,51,1),0 0 180px rgba(244,169,51,1),0 0 250px rgba(232,80,58,0.6),inset 0 0 50px rgba(244,169,51,0.7);border-width:14px}}
+@keyframes ringPulseOut{0%{opacity:0;transform:translate(-50%,-50%) scale(0.5);border-width:5px}30%{opacity:1;border-width:3px}100%{opacity:0;transform:translate(-50%,-50%) scale(1.5);border-width:1px}}
+@keyframes rayRotateIn{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+@keyframes raysAppear{0%{opacity:0}100%{opacity:1}}
+@keyframes dotBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+
+@keyframes flashWhite{0%{opacity:0}50%{opacity:1}100%{opacity:1}}
+@keyframes titleAnim{0%{opacity:1}70%{opacity:1}100%{opacity:0}}
+</style>
 </head>
-<body class="auth-page">
-
-  <div class="auth-card">
-    <button id="auth-dark-btn" class="auth-dark-toggle" onclick="toggleDarkAuth()"><i data-lucide="moon"></i></button>
-
-    <!-- Logo -->
-    <div class="auth-logo">
-      <span class="compass-icon">🧭</span>
-      <h1>CircleLOG</h1>
-      <p class="logo-sub">Family Study & Safety · Built by Jashwin</p>
-    </div>
-
-    <!-- Error box (hidden until needed) -->
-    <div id="auth-error" class="auth-error hidden"></div>
-
-    <!-- Tabs -->
-    <div class="auth-tabs">
-      <button id="tab-login" class="active" onclick="showLogin()">Login</button>
-      <button id="tab-signup" onclick="showSignup()">Sign Up</button>
-    </div>
-
-    <!-- LOGIN FORM -->
-    <div id="login-form">
-      <div class="form-group">
-        <label>Email</label>
-        <input type="email" id="login-email" placeholder="your@email.com" />
-      </div>
-      <div class="form-group">
-        <label>Password</label>
-        <input type="password" id="login-password" placeholder="••••••••" />
-      </div>
-      <button class="btn-primary" id="auth-submit-btn" data-label="Set Sail →"
-              onclick="handleLogin()">
-        Set Sail →
-      </button>
-    </div>
-
-    <!-- SIGNUP FORM -->
-    <div id="signup-form" class="hidden">
-      <div class="form-group">
-        <label>Your Name</label>
-        <input type="text" id="signup-name" placeholder="e.g. Jashwin" />
-      </div>
-      <div class="form-group">
-        <label>Email</label>
-        <input type="email" id="signup-email" placeholder="your@email.com" />
-      </div>
-      <div class="form-group">
-        <label>Password</label>
-        <input type="password" id="signup-password" placeholder="Min 6 characters" />
-      </div>
-      <div class="form-group">
-        <label>I am a...</label>
-        <select id="signup-role" onchange="handleRoleChange()">
-          <option value="">Select your role</option>
-          <option value="parent">⚓ Parent (Captain)</option>
-          <option value="child">🏴‍☠️ Child (Crew)</option>
-        </select>
-      </div>
-      <!-- Only visible when role = child -->
-      <div id="parent-email-field" class="form-group hidden">
-        <label>Parent's Email</label>
-        <input type="email" id="signup-parent-email" placeholder="parent@email.com" />
-      </div>
-      <button class="btn-primary" id="auth-submit-btn-signup" data-label="Join the Crew →"
-              onclick="handleSignup()">
-        Join the Crew →
-      </button>
-    </div>
-
-  </div>
-
-  <!-- Load Supabase from CDN (must be before our files) -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="supabase.js"></script>
-  <script src="auth.js"></script>
-  <script src="https://unpkg.com/lucide@latest"></script>
-  <script>lucide.createIcons();</script>
+<body>
+<div class="scene">
+<div class="stars">
+<div class="star"></div>
+<div class="star"></div>
+<div class="star"></div>
+<div class="star"></div>
+<div class="star"></div>
+<div class="star"></div>
+<div class="star"></div>
+<div class="star"></div>
+<div class="star"></div>
+<div class="star"></div>
+<div class="star"></div>
+<div class="star"></div>
+<div class="star"></div>
+<div class="star"></div>
+<div class="star"></div>
+</div>
+<div class="moon"></div>
+<div class="fog"></div>
+<div class="title">
+<h1>CircleLog</h1>
+<p>Family · Safety · Study</p>
+</div>
+<div class="ocean">
+<div class="wave wave1">
+<svg viewBox="0 0 1200 120" preserveAspectRatio="none">
+<path d="M0,50 Q300,20 600,50 T1200,50 L1200,120 L0,120 Z" fill="rgba(14,80,120,0.5)"/>
+</svg>
+</div>
+<div class="wave wave2">
+<svg viewBox="0 0 1200 120" preserveAspectRatio="none">
+<path d="M0,60 Q300,35 600,60 T1200,60 L1200,120 L0,120 Z" fill="rgba(6,40,64,0.6)"/>
+</svg>
+</div>
+<div class="wave wave3">
+<svg viewBox="0 0 1200 120" preserveAspectRatio="none">
+<path d="M0,70 Q300,50 600,70 T1200,70 L1200,120 L0,120 Z" fill="rgba(3,20,31,0.7)"/>
+</svg>
+</div>
+<div class="wave wave4">
+<svg viewBox="0 0 1200 120" preserveAspectRatio="none">
+<path d="M0,80 Q300,65 600,80 T1200,80 L1200,120 L0,120 Z" fill="rgba(3,20,31,0.9)"/>
+</svg>
+</div>
+</div>
+<div class="ship-container">
+<div class="ship">
+<div class="hull"></div>
+<div class="deck"></div>
+<div class="cabin"></div>
+<div class="mast mast1"></div>
+<div class="mast mast2"></div>
+<div class="sail sail1"></div>
+<div class="sail sail2"></div>
+<div class="sail sail3"></div>
+<div class="crow-nest"></div>
+<div class="flag"></div>
+<div class="bow"></div>
+<div class="wake"></div>
+<div class="splash"></div>
+<div class="splash"></div>
+<div class="splash"></div>
+</div>
+</div>
+<div class="compass-scene">
+<div class="rays">
+<div class="ray"></div>
+<div class="ray"></div>
+<div class="ray"></div>
+<div class="ray"></div>
+<div class="ray"></div>
+<div class="ray"></div>
+<div class="ray"></div>
+<div class="ray"></div>
+</div>
+<div class="compass">
+<div class="compass-outer">
+<div class="mark mark-n"></div>
+<div class="mark mark-e"></div>
+<div class="mark mark-s"></div>
+<div class="mark mark-w"></div>
+</div>
+<div class="compass-inner"></div>
+<div class="compass-needle"></div>
+<div class="compass-center"></div>
+<div class="compass-label label-n">N</div>
+<div class="compass-label label-s">S</div>
+<div class="compass-label label-e">E</div>
+<div class="compass-label label-w">W</div>
+</div>
+<div class="compass-ring ring1"></div>
+<div class="compass-ring ring2"></div>
+<div class="compass-ring ring3"></div>
+<div class="loading">Setting sail<span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+</div>
+<div class="flash"></div>
+</div>
+<script>
+setTimeout(() => {window.location.href = 'login.html';}, 7000);
+</script>
 </body>
 </html>
