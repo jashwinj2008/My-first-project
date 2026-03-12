@@ -1,18 +1,3 @@
 {
-  "rewrites": [
-    { "source": "/", "destination": "/intro.html" }
-  ]
+  "rewrites": [{ "source": "/", "destination": "/intro.html" }]
 }
-```
-
-Save it. ✅
-
----
-
-**STEP 2 — Push to GitHub**
-
-Open VS Code terminal → `Ctrl + backtick` → type these one by one:
-```
-git init
-git add .
-git commit -m "CircleLog final build"
