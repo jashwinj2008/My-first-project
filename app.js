@@ -113,7 +113,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   }
 
   const { data: { session } } = await supabaseClient.auth.getSession();
-  if (!session) { window.location.href = 'index.html'; return; }
+  if (!session) { window.location.href = 'login.html'; return; }
 
   currentUser = session.user;
   await loadProfile();
@@ -163,7 +163,7 @@ async function loadProfile() {
   if (!data) {
     // Profile row genuinely missing — sign out and go to login
     await supabaseClient.auth.signOut();
-    window.location.href = 'index.html';
+    window.location.href = 'login.html';
     return;
   }
 
